@@ -238,14 +238,14 @@ public class HeapPriorityQueue : IContainer
 			int v = tab[num];
 			while (k < count) 
 			{
-				if (k + 1 <= count)	// prawe dziecko: 2*n + 2 istnieje
+				if (k + 1 < count)	// prawe dziecko: 2*n + 2 istnieje
 					if (tab[k + 1] > tab[k]) //prawe dziecko jest wiêksze od lewego
 						k = k + 1;
 				if (tab[k] > v)
 				{
 					tab[num] = tab[k];
 					num = k;
-					k = 2 * num;
+					k = 2 * num + 1;
 				}
 				else
 					break;
