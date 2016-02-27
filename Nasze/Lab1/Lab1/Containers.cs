@@ -89,19 +89,12 @@ public class Queue : IContainer
 					tmp[i] = tab[(first + i) % tab.Length];
 				}
 				tab = tmp;
-			}
-			if (count == 0)
-			{
 				first = 0;
-				tab[first] = x;
-				count++;
 			}
-			else
-			{
-				//wstawiamy zawsze po prawej o ile jest miejsce
-				tab[(first + count) % tab.Length] = x;
-				count++;
-			}
+			//wstawiamy zawsze po prawej o ile jest miejsce
+			tab[(first + count) % tab.Length] = x;
+			count++;
+			
 	}
 
     public int Get()
