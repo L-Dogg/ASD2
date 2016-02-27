@@ -177,9 +177,8 @@ public class LazyPriorityQueue : IContainer
 
 			//Zeby nie bylo dziury, 
 			//wstawiamy ostatni element w miejsce usuwanego:
-			tab[ind] = tab[count - 1];
+			tab[ind] = tab[--count];
 
-			count--;
 			return v;
         }
 
@@ -217,7 +216,6 @@ public class HeapPriorityQueue : IContainer
     public HeapPriorityQueue(int n=2)
         {
 			tab = new int[n>2?n:2];
-			//tab[0] = int.MaxValue; //wartownik
         }
 
     public void Put(int x)
@@ -254,12 +252,12 @@ public class HeapPriorityQueue : IContainer
 
 	private void DownHeap(int num)
 		{
-			int k = 1;
+			int k = 2 * num + 1; // lewe dziecko: 2*n + 1
 			int v = tab[num];
-			while (k < count) // <=
+			while (k < count) 
 			{
-				if (k + 1 <= count)
-					if (tab[k + 1] > tab[k])
+				if (k + 1 <= count) // prawe dziecko 2*n + 2 istnieje
+					if (tab[k + 1] > tab[k]) //prawe dziecko jest wiêksze od lewego
 						k = k + 1;
 				if (tab[k] > v)
 				{
@@ -276,10 +274,12 @@ public class HeapPriorityQueue : IContainer
 	private void UpHeap(int num)
 		{
 			int v = tab[num];
-			while (tab[num / 2] < v && num != 0)
+			int k = (num % 2 == 0) ? (num / 2 - 1) : (num / 2); 
+			while (num != 0 && tab[k] < v)
 			{
-				tab[num] = tab[num / 2];
-				num = num / 2;
+				tab[num] = tab[k];
+				num = k;
+				k = (num % 2 == 0) ? (num / 2 - 1) : (num / 2);
 			}
 			tab[num] = v;
 
