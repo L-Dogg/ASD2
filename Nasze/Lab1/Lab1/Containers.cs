@@ -38,13 +38,9 @@ public class Stack : IContainer
 				int[] tmp = new int[2 * tab.Length];
 				for (int i = 0; i < tab.Length; i++)
 					tmp[i] = tab[i];
-				tmp[count++] = x;
 				tab = tmp;
 			}
-			else
-			{
-				tab[count++] = x;
-			}
+			tab[count++] = x;
         }
 
     public int Get()
@@ -58,7 +54,6 @@ public class Stack : IContainer
 
     public int Peek()
         {
-			// zmieniæ
 			if (count == 0)
 				throw new EmptyException();
 			else
@@ -86,17 +81,13 @@ public class Queue : IContainer
 
     public void Put(int x)
         {
-			// uzupelnic
 			if (count == tab.Length) //podwajamy rozmiar tablicy
 			{
 				int[] tmp = new int[2 * tab.Length];
-				int i, j;
-				//przepisanie od first w prawo
-				for (i = first, j = 0; i < tab.Length; i++, j++)
-					tmp[j] = tab[i];
-				//przepisanie reszty po lewej
-				for (i = 0; i < first; i++, j++)
-					tmp[j] = tab[i];
+				for (int i = 0; i < count; i++)
+				{
+					tmp[i] = tab[(first + i) % tab.Length];
+				}
 				tab = tmp;
 			}
 			if (count == 0)
@@ -108,15 +99,13 @@ public class Queue : IContainer
 			else
 			{
 				//wstawiamy zawsze po prawej o ile jest miejsce
-				int ind = (first + count) % tab.Length;
-				tab[ind] = x;
+				tab[(first + count) % tab.Length] = x;
 				count++;
 			}
 	}
 
     public int Get()
         {
-			// zmienic
 			if (count == 0)
 				throw new EmptyException();
 
@@ -155,7 +144,6 @@ public class LazyPriorityQueue : IContainer
 
     public void Put(int x)
         {
-			// uzupe³niæ
 			if (count == tab.Length) //podwajamy rozmiar tablicy
 			{
 				int[] tmp = new int[2 * tab.Length];
@@ -168,7 +156,6 @@ public class LazyPriorityQueue : IContainer
 
     public int Get()
         {
-			// zmieniæ
 			if (count == 0)
 				throw new EmptyException();
 
@@ -228,6 +215,7 @@ public class HeapPriorityQueue : IContainer
 					tmp[i] = tab[i];
 				tab = tmp;
 			}
+			// wstawianie na pierwsze wolne miejsce i poprawa w gore:
 			tab[count++] = x;
 			UpHeap(count - 1);
         }
@@ -238,16 +226,17 @@ public class HeapPriorityQueue : IContainer
 				throw new EmptyException();
 
 			int v = tab[0];
-			tab[0] = tab[--count];	//wpisanie ostatniego w korzen i poprawa
+			//wpisanie ostatniego w korzen i poprawa w dol:
+			tab[0] = tab[--count];	
 			DownHeap(0);
-			return v; // zmieniæ
+			return v; 
         }
     public int Peek()
         {
 			if (count == 0)
 				throw new EmptyException();
 
-			return tab[0]; // zmieniæ
+			return tab[0]; 
         }
 
 	private void DownHeap(int num)
@@ -256,7 +245,7 @@ public class HeapPriorityQueue : IContainer
 			int v = tab[num];
 			while (k < count) 
 			{
-				if (k + 1 <= count) // prawe dziecko 2*n + 2 istnieje
+				if (k + 1 <= count)	// prawe dziecko: 2*n + 2 istnieje
 					if (tab[k + 1] > tab[k]) //prawe dziecko jest wiêksze od lewego
 						k = k + 1;
 				if (tab[k] > v)
