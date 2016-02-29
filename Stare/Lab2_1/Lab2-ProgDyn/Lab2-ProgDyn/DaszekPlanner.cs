@@ -9,19 +9,19 @@ namespace ASD
     {
 		private double [] odleglosci, wysokosci;
 		private double maxDl;
-		private double[] koszty;
+		private int[] koszty;
 		
 		public DaszekPlanner(double[] odleglosci, double[] wysokosci, double maxDl)
         {
 			this.odleglosci = odleglosci;
 			this.wysokosci = wysokosci;
 			this.maxDl = maxDl;
-			koszty = new double[wysokosci.Length];
+			koszty = new int[wysokosci.Length];
         }
 		//zwraca dlugosc fragmentu o2-o1 o wysokosciach w2-w1 (parametry to indeksy do odp. tablicy)
-		private double licz_fragment(int o1, int o2, int w1, int w2)
+		private double licz_fragment(int i, int j)
 		{
-			return Math.Sqrt(Math.Pow((odleglosci[o2] - odleglosci[o1]), 2) + Math.Pow((wysokosci[w2] - wysokosci[w1]), 2));
+			return Math.Sqrt(Math.Pow((odleglosci[j] - odleglosci[i]), 2) + Math.Pow((wysokosci[j] - wysokosci[i]), 2));
 		}
 
 		//zwraca koszt daszku w tysiacach zlotych:
@@ -29,42 +29,27 @@ namespace ASD
         public int KosztDaszku(out int[] daszek)
         {
             daszek = null;
-			List<int> wierzcholki = new List<int>();
-
-			//dodajemy poczatek daszku:
-			wierzcholki.Add(0); 
-			int pocz = 0;
-
-			int kon = 1;
-			double frag = 0;
-			int koszt = 0;
-			bool last_is_short = false;
-
-			for(int i = 1; i < odleglosci.Length; i++)
+			for (int k = 0; k < koszty.Length; k++)
+				koszty[k] = int.MaxValue;
+			koszty[0] = 0;
+			koszty[1] = 1;
+			
+			for(int i = 2; i < odleglosci.Length - 1; i++)
 			{
-				// Mozemy tym samym kawalkiem dotrzec do jeszcze jednego slupka:
-				frag = licz_fragment(pocz, i, pocz, i);
-				if(frag <= maxDl)
+				for(int j = i + 1; j < odleglosci.Length; j++)
 				{
-					kon = i;
-					last_is_short = true;
-                }
-				// Nastepny slupek jest za daleko:
-				else
-				{
-					wierzcholki.Add(kon);   //konczymy odcinek
-					pocz = i;
-					kon = i;
-					koszt++;
+					if(licz_fragment(i, j) <= maxDl)
+					{
+						koszty[i] = koszty[i - 1];
+					}
+					else
+					{
+						koszty[i] = Math.Min
+					}
 				}
 			}
-			if(last_is_short == true)
-			{
-				wierzcholki.Add(kon);
-				koszt++;
-			}
-			daszek = wierzcholki.ToArray();
-            return koszt;
+
+            return koszty[0];
         }
 
         public int KosztLadnegoDaszku(out int[] daszek)
