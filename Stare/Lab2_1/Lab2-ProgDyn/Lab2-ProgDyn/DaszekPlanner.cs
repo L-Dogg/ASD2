@@ -10,13 +10,15 @@ namespace ASD
 		private double [] odleglosci, wysokosci;
 		private double maxDl;
 		private int[] koszty;
-		
+		private int len;
+
 		public DaszekPlanner(double[] odleglosci, double[] wysokosci, double maxDl)
         {
 			this.odleglosci = odleglosci;
 			this.wysokosci = wysokosci;
 			this.maxDl = maxDl;
-			koszty = new int[wysokosci.Length];
+			len = wysokosci.Length;
+            koszty = new int[len];
         }
 		//zwraca dlugosc fragmentu o2-o1 o wysokosciach w2-w1 (parametry to indeksy do odp. tablicy)
 		private double licz_fragment(int i, int j)
@@ -29,27 +31,32 @@ namespace ASD
         public int KosztDaszku(out int[] daszek)
         {
             daszek = null;
-			for (int k = 0; k < koszty.Length; k++)
-				koszty[k] = int.MaxValue;
-			koszty[0] = 0;
-			koszty[1] = 1;
-			
-			for(int i = 2; i < odleglosci.Length - 1; i++)
+			int[] poprzedni = new int[len];
+			for (int k = 1; k < len; k++)
 			{
-				for(int j = i + 1; j < odleglosci.Length; j++)
+				koszty[k] = k;
+				poprzedni[k] = k - 1;
+			}
+			
+			for(int i = 1; i < len; i++)
+			{
+				for(int j = i - 1; j >= 0; j--)
 				{
 					if(licz_fragment(i, j) <= maxDl)
 					{
-						koszty[i] = koszty[i - 1];
-					}
-					else
-					{
-						koszty[i] = Math.Min
+						koszty[i] = koszty[j] + 1;
+						poprzedni[i] = j;
 					}
 				}
 			}
-
-            return koszty[0];
+			daszek = new int[koszty[len - 1] + 1];
+			int p = len - 1;
+			for(int i = koszty[len-1]; i >= 0; i--)
+			{
+				daszek[i] = p;
+				p = poprzedni[p];
+			}
+            return koszty[len - 1];
         }
 
         public int KosztLadnegoDaszku(out int[] daszek)
