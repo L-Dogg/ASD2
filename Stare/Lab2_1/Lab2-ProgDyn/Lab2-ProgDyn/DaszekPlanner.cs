@@ -7,6 +7,7 @@ namespace ASD
 {
     class DaszekPlanner
     {
+
 		private double [] odleglosci, wysokosci;
 		private double maxDl;
 		private int[] koszty;
@@ -26,10 +27,6 @@ namespace ASD
 			return Math.Sqrt(Math.Pow((odleglosci[j] - odleglosci[i]), 2) + Math.Pow((wysokosci[j] - wysokosci[i]), 2));
 		}
 
-		private double licz_tangens(int i, int j)
-		{
-			return Math.Abs(wysokosci[j] - wysokosci[i]) / Math.Abs(odleglosci[j] - odleglosci[i]);
-        }
 		//zwraca koszt daszku w tysiacach zlotych:
 		//parametr wyjsciowy: slupki, na ktorych beda sie opieraly kolejne fragmenty daszku
         public int KosztDaszku(out int[] daszek)
@@ -37,7 +34,6 @@ namespace ASD
             daszek = null;
 			int[] poprzedni = new int[len];
 			
-
 			for(int i = 1; i < len; i++)
 			{
 				koszty[i] = i;
@@ -63,30 +59,41 @@ namespace ASD
             return koszty[len - 1];
         }
 
-        public int KosztLadnegoDaszku(out int[] daszek)
+		private double licz_tangens(int i, int j)
+		{
+			return (wysokosci[i] - wysokosci[j]) / (odleglosci[i] - odleglosci[j]);
+		}
+
+		public int KosztLadnegoDaszku(out int[] daszek)
         {
 			daszek = null;
 			int[] poprzedni = new int[len];
-			double max_tan = double.MinValue;
+			double pop_tan; // = double.MinValue;
+			double cur_tan;
 
-			for (int i = 1; i < len; i++)
+            for (int i = 1; i < len; i++)
 			{
 				koszty[i] = i;
 				poprzedni[i] = i - 1;
-				max_tan = 0;
-
+				pop_tan = double.MaxValue;
+				
 				for (int j = i - 1; j >= 0; j--)
 				{
-					double cur_tan = licz_tangens(i, j);
-					if (cur_tan >= max_tan && licz_fragment(i, j) <= maxDl)
+					cur_tan = licz_tangens(i, j);
+					
+					if (cur_tan <= pop_tan)
 					{
-						koszty[i] = koszty[j] + 1;
-						poprzedni[i] = j;
-						max_tan = cur_tan;
+						if (licz_fragment(i, j) <= maxDl)
+						{
+							koszty[i] = koszty[j] + 1;
+							poprzedni[i] = j;
+							pop_tan = cur_tan;
+						}
 					}
 				}
-			}
-
+					
+            }
+			
 			daszek = new int[koszty[len - 1] + 1];
 			int p = len - 1;
 			for (int i = koszty[len - 1]; i >= 0; i--)
@@ -94,6 +101,7 @@ namespace ASD
 				daszek[i] = p;
 				p = poprzedni[p];
 			}
+
 			return koszty[len - 1];
 
 		}
