@@ -26,10 +26,15 @@ namespace ASD
 		{
 			return Math.Sqrt(Math.Pow((odleglosci[j] - odleglosci[i]), 2) + Math.Pow((wysokosci[j] - wysokosci[i]), 2));
 		}
+		//zwraca tangens kata nachylenia daszku z slupka i do slupka j
+		private double licz_tangens(int i, int j)
+		{
+			return (wysokosci[i] - wysokosci[j]) / (odleglosci[i] - odleglosci[j]);
+		}
 
 		//zwraca koszt daszku w tysiacach zlotych:
 		//parametr wyjsciowy: slupki, na ktorych beda sie opieraly kolejne fragmenty daszku
-        public int KosztDaszku(out int[] daszek)
+		public int KosztDaszku(out int[] daszek)
         {
             daszek = null;
 			int[] poprzedni = new int[len];
@@ -59,16 +64,13 @@ namespace ASD
             return koszty[len - 1];
         }
 
-		private double licz_tangens(int i, int j)
-		{
-			return (wysokosci[i] - wysokosci[j]) / (odleglosci[i] - odleglosci[j]);
-		}
-
+		//zwraca koszt daszku w tysiacach zlotych:
+		//parametr wyjsciowy: slupki, na ktorych beda sie opieraly kolejne fragmenty daszku
 		public int KosztLadnegoDaszku(out int[] daszek)
         {
 			daszek = null;
 			int[] poprzedni = new int[len];
-			double pop_tan; // = double.MinValue;
+			double pop_tan;
 			double cur_tan;
 
             for (int i = 1; i < len; i++)
@@ -103,7 +105,6 @@ namespace ASD
 			}
 
 			return koszty[len - 1];
-
 		}
     }
 }
