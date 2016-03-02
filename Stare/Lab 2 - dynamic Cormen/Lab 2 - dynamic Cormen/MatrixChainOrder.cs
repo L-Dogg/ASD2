@@ -11,6 +11,8 @@ namespace Lab_2___dynamic_Cormen
 		//matrix Ai (i=1...n): dim[i-1] x dim[i]
 		private int n;
 		private int[,] m, s;
+
+		//Koszt wymnozenia macierzy
 		public int MatrixChain(int[] dim)
 		{
 			n = dim.Length - 1;
@@ -39,6 +41,7 @@ namespace Lab_2___dynamic_Cormen
 			}
 			return m[1, n];
 		}
+		//Wydruk nawiasowania:
 		public void printParens(int i, int j)
 		{
 			if (i == j)

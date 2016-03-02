@@ -38,6 +38,7 @@ namespace Lab_2___dynamic_Cormen
 			printSolution(frags, len);
 			return income[len];
 		}
+
 		private void printSolution(int[] sol, int len)
 		{
 			int n = len;

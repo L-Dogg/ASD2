@@ -21,6 +21,12 @@ namespace Lab_2___dynamic_Cormen
             Console.WriteLine("Matrix Parens Order: {0}", mco.MatrixChain(dims));
 			Console.WriteLine();
 			mco.printParens(1, dims.Length - 1);
-		}
+
+			LCS lcs = new LCS();
+			Console.WriteLine("\nLCS: {0}", lcs.LCS_Lenght("ABCBDAB", "BDCABA"));
+			lcs.printLCS("ABCBDAB", "BDCABA");
+
+			Console.WriteLine();
+        }
 	}
 }
