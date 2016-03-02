@@ -15,6 +15,12 @@ namespace Lab_2___dynamic_Cormen
 
 			RodCutting rc = new RodCutting();
 			Console.WriteLine("Rod Cutting: {0}", rc.cutRod(9));
+
+			MatrixChainOrder mco = new MatrixChainOrder();
+			int[] dims = { 35, 15, 5, 10, 20 };
+            Console.WriteLine("Matrix Parens Order: {0}", mco.MatrixChain(dims));
+			Console.WriteLine();
+			mco.printParens(1, dims.Length - 1);
 		}
 	}
 }
