@@ -11,7 +11,10 @@ namespace Lab_2___dynamic_Cormen
 		static void Main(string[] args)
 		{
 			Cashier cr = new Cashier();
-			Console.WriteLine(cr.getChange(10));
+			Console.WriteLine("Get Change: {0}", cr.getChange(10));
+
+			RodCutting rc = new RodCutting();
+			Console.WriteLine("Rod Cutting: {0}", rc.cutRod(9));
 		}
 	}
 }
