@@ -26,7 +26,6 @@ namespace ASD
 		//n - liczba cyfr, a - poprzednia cyfra
 		private static int recurence(int n, int a)
 		{
-			//Console.WriteLine("n = {0}, a = {1}", n, a);
 			if (n == 0)
 				return 0;
 			if (n == 1)
@@ -44,7 +43,7 @@ namespace ASD
 			{
 				count = (count + recurence(n - 1, i)) % mod;
 			}
-			//Console.WriteLine("Count = {0}", count);
+			
 			return count;
 
 		}
@@ -52,8 +51,30 @@ namespace ASD
         // n cyfr
         public static int SpecialNumbersDP(int n)
         {
-            // ZMIEN
-            return 0;
+			if (n == 0)
+				return 0;
+
+			int[,] tab = new int[9 + 1, n + 1];
+			for (int i = 1; i <= 9; i++)
+				tab[i, 1] = 1;
+
+			for(int i = 2; i <= n; i++)
+			{
+				for(int j = 1; j <= 9; j++)
+				{
+					tab[j, i] = tab[j, i - 1];
+					for (int k = j - 1; k >= 1; k = k - 2)
+					{
+						tab[j, i] = (tab[j, i] + tab[k, i - 1]) % mod;
+					}
+				}
+			}
+
+			int count = 0;
+			for (int i = 1; i <= 9; i++)
+				count = (count + tab[i, n]) % mod;
+
+			return count % mod;
         }
 
         // programowanie dynamiczne
@@ -61,10 +82,33 @@ namespace ASD
         // req - tablica z wymaganiami, jezeli req[i, j] == 0 to znaczy, ze  i + 1 nie moze stac PRZED j + 1
         public static int SpecialNumbersDP(int n, bool[,] req)
         {
-            // ZMIEN
-            return 0;
+			if (n == 0)
+				return 0;
+
+			int[,] tab = new int[9 + 1, n + 1];
+			for (int i = 1; i <= 9; i++)
+				tab[i, 1] = 1;
+
+			for (int i = 2; i <= n; i++)
+			{
+				for (int j = 1; j <= 9; j++)
+				{
+					for (int k = 1; k <= 9; k++)
+					{
+						if(req[k-1, j-1])
+							tab[j, i] = (tab[j, i] + tab[k, i - 1]) % mod;
+					}
+				}
+			}
+
+			int count = 0;
+			for (int i = 1; i <= 9; i++)
+				count = (count + tab[i, n]) % mod;
+
+			return count % mod;
         }
 
     }//class SpecialNumbers
 
 }//namespace ASD
+				

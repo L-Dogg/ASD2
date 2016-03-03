@@ -23,9 +23,17 @@ namespace ASD
 			Test_RecFunction(outputs);
 			TimeSpan end = Process.GetCurrentProcess().TotalProcessorTime;
 			Console.WriteLine("Measured time: " + (end - begin).TotalMilliseconds + " ms.");
-			//Test_DPFunction(outputs);
-			//Test_DP2Function(outputs);
-			Console.WriteLine();
+
+			begin = Process.GetCurrentProcess().TotalProcessorTime;
+			Test_DPFunction(outputs);
+			end = Process.GetCurrentProcess().TotalProcessorTime;
+			Console.WriteLine("Measured time: " + (end - begin).TotalMilliseconds + " ms.");
+
+			begin = Process.GetCurrentProcess().TotalProcessorTime;
+			Test_DP2Function(outputs);
+			end = Process.GetCurrentProcess().TotalProcessorTime;
+			Console.WriteLine("Measured time: " + (end - begin).TotalMilliseconds + " ms.");
+
         }
 
         private static void Test_RecFunction(int[] outputs)
