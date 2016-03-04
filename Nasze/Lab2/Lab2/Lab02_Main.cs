@@ -34,6 +34,8 @@ namespace ASD
 			end = Process.GetCurrentProcess().TotalProcessorTime;
 			Console.WriteLine("Measured time: " + (end - begin).TotalMilliseconds + " ms.");
 
+			SpecialNumbers.SpecialNumbersDP(3);
+
         }
 
         private static void Test_RecFunction(int[] outputs)

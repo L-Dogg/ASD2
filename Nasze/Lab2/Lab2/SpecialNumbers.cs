@@ -53,30 +53,41 @@ namespace ASD
         {
 			if (n == 0)
 				return 0;
+			if (n == 1)
+				return 9;
 
-			int[,] tab = new int[9 + 1, n + 1];
+			int[] pop = new int[9 + 1];
+			int[] tab = new int[9 + 1];
+
 			for (int i = 1; i <= 9; i++)
-				tab[i, 1] = 1;
+				pop[i] = 1;
 
 			for(int i = 2; i <= n; i++)
 			{
 				for(int j = 1; j <= 9; j++)
 				{
-					tab[j, i] = tab[j, i - 1];
+					tab[j] = pop[j];
+					
 					for (int k = j - 1; k >= 1; k = k - 2)
 					{
-						tab[j, i] = (tab[j, i] + tab[k, i - 1]) % mod;
+						tab[j] = (tab[j] + pop[k]) % mod;
 					}
 				}
+				tab.CopyTo(pop, 0);
 			}
-
+			
 			int count = 0;
 			for (int i = 1; i <= 9; i++)
-				count = (count + tab[i, n]) % mod;
+				count = (count + pop[i]) % mod;
 
 			return count % mod;
         }
-
+		private static void printer(int[] tab)
+		{
+			for (int i = 1; i < tab.Length; i++)
+				Console.Write("{0,2} ", tab[i]);
+			Console.WriteLine();
+		}
         // programowanie dynamiczne
         // n cyfr
         // req - tablica z wymaganiami, jezeli req[i, j] == 0 to znaczy, ze  i + 1 nie moze stac PRZED j + 1
@@ -84,10 +95,14 @@ namespace ASD
         {
 			if (n == 0)
 				return 0;
+			if (n == 1)
+				return 9;
 
-			int[,] tab = new int[9 + 1, n + 1];
+			int[] pop = new int[9 + 1];
+			int[] tab = new int[9 + 1];
+
 			for (int i = 1; i <= 9; i++)
-				tab[i, 1] = 1;
+				pop[i] = 1;
 
 			for (int i = 2; i <= n; i++)
 			{
@@ -96,14 +111,15 @@ namespace ASD
 					for (int k = 1; k <= 9; k++)
 					{
 						if(req[k-1, j-1])
-							tab[j, i] = (tab[j, i] + tab[k, i - 1]) % mod;
+							tab[j] = (tab[j] + pop[k]) % mod;
 					}
 				}
+				tab.CopyTo(pop, 0);
 			}
 
 			int count = 0;
 			for (int i = 1; i <= 9; i++)
-				count = (count + tab[i, n]) % mod;
+				count = (count + tab[i]) % mod;
 
 			return count % mod;
         }
