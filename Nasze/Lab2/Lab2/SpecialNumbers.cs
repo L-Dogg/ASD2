@@ -6,7 +6,7 @@ namespace ASD
     class SpecialNumbers
     {
         const int mod = 10000;
-		static int counter;
+		
         // funkcja rekurencyjna
         // n cyfr
         public static int SpecialNumbersRec(int n)
