@@ -6,7 +6,7 @@ namespace ASD
     class SpecialNumbers
     {
         const int mod = 10000;
-
+		static int counter;
         // funkcja rekurencyjna
         // n cyfr
         public static int SpecialNumbersRec(int n)
@@ -41,7 +41,10 @@ namespace ASD
 			count = (count + recurence(n - 1, a)) % mod;
 			for (int i = a - 1; i >= 1; i = i - 2)
 			{
-				count = (count + recurence(n - 1, i)) % mod;
+				if (n == 2)
+					count += i / 2 + 1;
+				else
+					count = (count + recurence(n - 1, i)) % mod;
 			}
 			
 			return count;
@@ -56,29 +59,31 @@ namespace ASD
 			if (n == 1)
 				return 9;
 
-			int[] pop = new int[9 + 1];
+			//int[] pop = new int[9 + 1];
 			int[] tab = new int[9 + 1];
 
 			for (int i = 1; i <= 9; i++)
-				pop[i] = 1;
+				tab[i] = 1;
 
 			for(int i = 2; i <= n; i++)
 			{
-				for(int j = 1; j <= 9; j++)
+				for(int j = 9; j >= 1; j--)
 				{
-					tab[j] = pop[j];
+					//tab[j] = pop[j];
 					
 					for (int k = j - 1; k >= 1; k = k - 2)
 					{
-						tab[j] = (tab[j] + pop[k]) % mod;
+						//tab[j] = (tab[j] + pop[k]) % mod;
+						tab[j] = (tab[j] + tab[k]) % mod;
 					}
 				}
-				tab.CopyTo(pop, 0);
+				//tab.CopyTo(pop, 0);
 			}
 			
 			int count = 0;
 			for (int i = 1; i <= 9; i++)
-				count = (count + pop[i]) % mod;
+				//count = (count + pop[i]) % mod;
+				count = (count + tab[i]) % mod;
 
 			return count % mod;
         }
