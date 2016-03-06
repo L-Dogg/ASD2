@@ -6,7 +6,7 @@ namespace ASD
     class SpecialNumbers
     {
         const int mod = 10000;
-		
+		static int count = 0;
         // funkcja rekurencyjna
         // n cyfr
         public static int SpecialNumbersRec(int n)
@@ -16,38 +16,49 @@ namespace ASD
 			if (n == 1)
 				return 9;
 
-			int count = 0;
-			
+			count = 0;
+
 			// 9 mozliwosci na pierwszej od lewej pozycji
 			for (int i = 9; i >= 1; i--)
-				count = (count + recurence(n-1, i)) % mod;
-			return count % mod;
+				recurence(n - 1, i);
+            return count % mod;
         }
 		//n - liczba cyfr, a - poprzednia cyfra
-		private static int recurence(int n, int a)
+		//private static int recurence(int n, int a)
+		private static void recurence(int n, int a)
 		{
 			if (n == 0)
-				return 0;
+				//return 0;
+				return;
 			if (n == 1)
-				return a/2 + 1;
-
-			if (a == 1)	// po prawej moga byc juz tylko 1
-				return 1;
-
-			int count = 0;
+			{
+				count += a / 2 + 1;
+				if (count >= mod)
+					count = count % mod;
+				return;
+			}
+			if (a == 1) // po prawej moga byc juz tylko 1
+			{
+				++count;
+				if (count >= mod)
+					count = count % mod;
+				return;
+			}
 
 			//zaczynamy od a - 1 zeby zachowac parzystosc, 
 			//pozniej co dwie cyfry w dol, zeby zachowac parzystosc
-			count = (count + recurence(n - 1, a)) % mod;
-			for (int i = a - 1; i >= 1; i = i - 2)
+			recurence(n - 1, a);
+            for (int i = a - 1; i >= 1; i = i - 2)
 			{
 				if (n == 2)
+				{
 					count += i / 2 + 1;
+					if (count >= mod)
+						count = count % mod;
+				}
 				else
-					count = (count + recurence(n - 1, i)) % mod;
-			}
-			
-			return count;
+					recurence(n - 1, i);
+            }
 
 		}
         // programowanie dynamiczne
@@ -70,7 +81,9 @@ namespace ASD
 				{					
 					for (int k = j - 1; k >= 1; k = k - 2)
 					{
-						tab[j] = (tab[j] + tab[k]) % mod;
+						tab[j] += tab[k];
+						if (tab[j] >= mod)
+							tab[j] = tab[j] % mod;
 					}
 				}
 			}
@@ -106,18 +119,25 @@ namespace ASD
 					{
 						if (req[j - 1, k - 1])
 						{
-							tab[j] = (tab[j] + pop[k]) % mod;
+							tab[j] += pop[k];
+							if (tab[j] >= mod)
+								tab[j] = tab[j] % mod;
 						}
 					}
 				}
-				tab.CopyTo(pop, 0);
+				for (int j = 1; j <= 9; j++)
+					pop[j] = tab[j];
 				for (int j = 1; j <= 9; j++)
 					tab[j] = 0;
             }
 
 			int count = 0;
 			for (int i = 1; i <= 9; i++)
-				count = (count + pop[i]) % mod;
+			{
+				count += pop[i];
+				if (count >= mod)
+					count = count % mod;
+            }
 
 			return count % mod;
         }
