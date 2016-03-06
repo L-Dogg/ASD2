@@ -6,16 +6,25 @@ namespace ASD
     class SpecialNumbers
     {
         const int mod = 10000;
+		// count jest statycznym licznikiem, poniewaz rekurencyjna metoda
+		// typu void, operujaca na tym liczniku, dziala szybciej niz
+		// podobna metoda typu int dzialajaca na zmiennej lokalnej tej metody
 		static int count = 0;
+
         // funkcja rekurencyjna
         // n cyfr
         public static int SpecialNumbersRec(int n)
         {
+			// Pierwszy warunek dla "szczegolnego" przypadku
+			if (n < 0)
+				return 0;
+
 			if (n == 0)
 				return 0;
 			if (n == 1)
 				return 9;
 
+			// Musi byc wyzerowane przed kazdym uruchomieniem
 			count = 0;
 
 			// 9 mozliwosci na pierwszej od lewej pozycji
@@ -28,7 +37,6 @@ namespace ASD
 		private static void recurence(int n, int a)
 		{
 			if (n == 0)
-				//return 0;
 				return;
 			if (n == 1)
 			{
@@ -65,6 +73,10 @@ namespace ASD
         // n cyfr
         public static int SpecialNumbersDP(int n)
         {
+			// Pierwszy warunek dla "szczegolnego" przypadku
+			if (n < 0)
+				return 0;
+
 			if (n == 0)
 				return 0;
 			if (n == 1)
@@ -100,11 +112,17 @@ namespace ASD
         // req - tablica z wymaganiami, jezeli req[i, j] == 0 to znaczy, ze  i + 1 nie moze stac PRZED j + 1
         public static int SpecialNumbersDP(int n, bool[,] req)
         {
+			// Pierwszy warunek dla "szczegolnego" przypadku
+			if (n < 0)
+				return 0;
+
 			if (n == 0)
 				return 0;
 			if (n == 1)
 				return 9;
 
+			// Jezeli w tab przechowujemy dane dla liczb n-cyfrowych, 
+			// to wektor pop zawiera dane dla liczb (n-1)-cyfrowych
 			int[] pop = new int[9 + 1];
 			int[] tab = new int[9 + 1];
 
@@ -125,6 +143,7 @@ namespace ASD
 						}
 					}
 				}
+				//Przepisanie i wyzerowanie:
 				for (int j = 1; j <= 9; j++)
 					pop[j] = tab[j];
 				for (int j = 1; j <= 9; j++)
