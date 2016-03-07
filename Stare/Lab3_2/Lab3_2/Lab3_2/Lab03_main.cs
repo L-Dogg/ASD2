@@ -26,15 +26,12 @@ namespace Lab03
                 Console.WriteLine("# licznik: {0}", Graph.Counter);
                 Console.WriteLine("Graf g1 jest typu: {0} i jest skierowany: {1}", g1.GetType(), g1.Directed);
 
-
                 h1 = g1.AddVertex();
                 Console.WriteLine("\nDodawanie\nGraf h1 ma {0} (powinno być 6) wierzchołków, a ostatni wierzchołek ma stopień {1} (powinno być 0)",
                     h1.VerticesCount, h1.InDegree(h1.VerticesCount - 1));
                 Console.WriteLine("Graf h1 ma {0} (powinno być 6) krawędzi", h1.EdgesCount);
                 Console.WriteLine("# licznik: {0}", Graph.Counter);
 
-
-                h1 = g1.DeleteVertex(2);
                 Console.WriteLine("\nUsuwanie\nGraf h1 ma {0} (powinno być 4) wierzchołków, a wierzchołki 1,2,3 mają odpowiednio stopienie {1} (powinno być 1),{2} (powinno być 0),{3} (powinno być 1)",
                     h1.VerticesCount, h1.InDegree(1), h1.InDegree(2), h1.InDegree(3));
                 Console.WriteLine("Graf h1 ma {0} (powinno być 2) krawędzi", h1.EdgesCount);
@@ -45,8 +42,6 @@ namespace Lab03
                 Console.WriteLine("\nDopełnienie g1 ma {0} (powinno być 4) krawędzi", h1.EdgesCount);
                 Console.WriteLine("# licznik: {0}", Graph.Counter);
 
-
-                h1 = g1.Closure();
                 Console.WriteLine("\nDomknięcie g1 ma {0} (powinno być 10) krawędzi", h1.EdgesCount);
                 Console.WriteLine("# licznik: {0}", Graph.Counter);
 

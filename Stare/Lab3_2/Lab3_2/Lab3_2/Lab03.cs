@@ -21,13 +21,16 @@ public static class BasicGraphExtender
     public static Graph AddVertex(this Graph g)
         {
 			Graph ret = g.IsolatedVerticesGraph(g.Directed, g.VerticesCount + 1);
-			List<Edge> elist = new List<Edge>();
+			HashSet<Edge> elist = new HashSet<Edge>();
 			for (int i = 0; i < g.VerticesCount; i++)
 			{
 				foreach(Edge e in g.OutEdges(i))
 				{
-					if (elist.BinarySearch(e) < 0)
+					if (!elist.Contains(e))
+					{
 						ret.AddEdge(e);
+						elist.Add(e);
+					}
 
                 }
 			}
@@ -35,7 +38,7 @@ public static class BasicGraphExtender
 			return ret;
         }
 
-    /// <summary>Usuwanie wierzchołka z grafu</summary>
+    /// <summary>Usuwanie wierzchołka z grafu</summary>\
     /// <param name="g">Graf, z którego usuwamy wierzchołek</param>
     /// <param name="del">Usuwany wierzchołek</param>
     /// <returns>Graf z usunietym wierzchołkiem</returns>
@@ -50,7 +53,39 @@ public static class BasicGraphExtender
     /// </remarks>
     public static Graph DeleteVertex(this Graph g, int del)
 		{
-        return g.Clone(); // zmienic !
+			Graph a = g.Clone();
+
+			// Usuniecie wszystkich krawedzi incydentnych z wierzcholkiem:
+			foreach(Edge e in a.OutEdges(del))
+			{
+				a.DelEdge(e);
+			}
+
+			// Utworzenie grafu bez krawedzi na bazie wierzcholkow grafu g bez usuwanego:
+			Graph ret = a.IsolatedVerticesGraph(a.Directed, a.VerticesCount - 1);
+
+			HashSet<Edge> elist = new HashSet<Edge>();
+			// Uzupelnienie wynikowego grafu o krawedzie z uwzglednieniem przesuniecia:
+			for (int i = 0; i < a.VerticesCount; i++)
+			{
+				foreach(Edge e in a.OutEdges(i))
+				{
+					if (!elist.Contains(e))
+					{
+						if (i < del && e.To < del)
+							ret.AddEdge(i, e.To, e.Weight);
+						else if (i < del && e.To > del)
+							ret.AddEdge(i, e.To - 1, e.Weight);
+						else if (i > del && e.To < del)
+							ret.AddEdge(i - 1, e.To, e.Weight);
+						else
+							ret.AddEdge(i - 1, e.To - 1, e.Weight);
+
+						elist.Add(e);			
+					}
+				}
+			}
+			return ret; // zmienic !
         }
 
     /// <summary>Dopełnienie grafu</summary>
@@ -66,7 +101,31 @@ public static class BasicGraphExtender
     /// </remarks>
     public static Graph Complement(this Graph g)
         {
-        return g.Clone(); // zmienic !
+			Graph ret = g.IsolatedVerticesGraph();
+
+			HashSet<Edge> elist = new HashSet<Edge>();
+			for (int i = 0; i < g.VerticesCount; i++)
+			{
+				for(int j = 0; j < g.VerticesCount; j++)
+				{
+					if (i == j)
+						continue;
+
+					if (g.GetEdgeWeight(i, j) == null)
+					{
+						Edge e = new Edge(i, j, 1);
+                        if (!elist.Contains(e))
+						{
+							Console.WriteLine("Adding edge: {0} - {1}", i, j);
+							ret.AddEdge(i, j);
+							elist.Add(e);
+						}
+					}
+					else if (g.GetEdgeWeight(i, j) > 1)
+						throw new ArgumentException();
+				}
+			}
+			return ret; // zmienic !
         }
 
     /// <summary>Domknięcie grafu</summary>
