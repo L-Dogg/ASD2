@@ -82,9 +82,7 @@ class Lab03
                 
                 if (deleted == false) return null;
             }
-            
-            
-        //for(int i = 0; i < ord.Length; i++) Console.WriteLine("{0}. {1}",i, ord[i]);
+
 
         return ord;  // zmienic
         }
@@ -100,8 +98,23 @@ class Lab03
     /// Nie wolno zmianiac zadanego grafu !!!
     /// </remarks>
     public static int[] TopologicalSort_DFS(Graph graph)
-        {
-        return null;  // zmienic
-        }
+    {
+		Graph t = graph.Clone();
+		int[] ord = new int[graph.EdgesCount];
+		for (int i = 0; i < graph.EdgesCount; i++)
+			ord[i] = -1;
+		int key = graph.EdgesCount;
+		int cc;
+
+		Predicate<int> post = delegate (int v)
+		{
+			ord[v] = key--;
+			return true;
+		};
+
+		t.DFSearchAll(null, post, out cc);
+        return ord;
+    }
+	
 }
 

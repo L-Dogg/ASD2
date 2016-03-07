@@ -32,8 +32,7 @@ class Test
         g2[0].AddEdge(0, 3);
         g2[0].AddEdge(1, 2);
         g2[0].AddEdge(3, 2);
-       
-        
+
         g2[1] = rgg.DAG(typeof(AdjacencyMatrixGraph),100,0.9,1,1);
         g2[2] = rgg.DAG(typeof(AdjacencyListsGraph<SimplyAdjacencyList>),1000,0.2,1,1);
 
@@ -91,10 +90,10 @@ class Test
         {
 
         if ( ord==null ) return false;
-        for ( int v=0 ; v<g.VerticesCount ; ++v )
-            foreach ( var e in g.OutEdges(v) )
-                if ( ord[e.From]>=ord[e.To] )
-                    return false;
+		for (int v = 0; v < g.VerticesCount; ++v)
+			foreach (var e in g.OutEdges(v))
+				if (ord[e.From] >= ord[e.To])
+					return false;
         return true;
         }
 
