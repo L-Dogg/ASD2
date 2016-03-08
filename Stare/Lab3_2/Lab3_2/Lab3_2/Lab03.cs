@@ -116,7 +116,6 @@ public static class BasicGraphExtender
 						Edge e = new Edge(i, j, 1);
                         if (!elist.Contains(e))
 						{
-							Console.WriteLine("Adding edge: {0} - {1}", i, j);
 							ret.AddEdge(i, j);
 							elist.Add(e);
 						}
@@ -141,7 +140,30 @@ public static class BasicGraphExtender
     /// </remarks>
     public static Graph Closure(this Graph g)
         {
-        return g.Clone(); // zmienic !
+			Graph ret = g.IsolatedVerticesGraph();
+			PathsInfo[] tab = new PathsInfo[g.VerticesCount];
+			HashSet<Edge> elist = new HashSet<Edge>();
+
+			for (int i = 0; i < g.VerticesCount; i++)
+			{
+				if(g.DijkstraShortestPaths(i, out tab))
+				{
+					for(int j = 0; j < g.VerticesCount; j++)
+					{
+						if (g.GetEdgeWeight(i, j) > 1)
+							throw new ArgumentException();
+
+						Edge e = new Edge(i, j, 1);
+						if (tab[j].Dist != null && elist.Contains(e) == false)
+						{
+							elist.Add(e);
+							ret.AddEdge(e);
+						}
+					}
+				}
+
+			}
+			return ret; // zmienic !
         }
 
     /// <summary>Badanie czy graf jest dwudzielny</summary>
