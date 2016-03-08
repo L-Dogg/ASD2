@@ -218,8 +218,7 @@ namespace ASD.Graphs
 				{
 					if (col[vert] == COLORS.NONE)
 						col[vert] = (partition_class++ % 2 == 0) ? COLORS.RED : COLORS.BLUE;
-					//Console.WriteLine("Partition: {0}", partition_class % 2);
-					//Console.WriteLine("DEQ: Vertex {0} has color {1}", vert, col[vert]);
+
 					foreach (Edge e in g.OutEdges(vert))
 					{
 						if (col[e.To] == COLORS.NONE)
@@ -228,7 +227,6 @@ namespace ASD.Graphs
 								col[e.To] = COLORS.BLUE;
 							else
 								col[e.To] = COLORS.RED;
-							//Console.WriteLine("ENQ: Vertex {0} has color {1}", e.To, col[e.To]);
 							q.Enqueue(e.To);
 						}
 						else if (col[e.To] == col[vert])
@@ -241,10 +239,6 @@ namespace ASD.Graphs
 					}
 					if (i == g.OutDegree(v))
 						partition_class--;
-				}
-				else
-				{
-					//Console.WriteLine("NIE WESZŁO! Vertex {0} has color {1}", vert, col[vert]);
 				}
 				foreach (Edge e in g.OutEdges(vert))
 					if (col[e.To] == col[vert])
