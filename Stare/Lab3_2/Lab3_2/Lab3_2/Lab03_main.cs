@@ -100,7 +100,7 @@ namespace Lab03
 				
                 Console.WriteLine("\nCzy h2 jest dwudzielny ?: {0} (powinno być False)", g2.IsBipartite());
                 Console.WriteLine("# licznik: {0}", Graph.Counter);
-
+				new GraphExport().Export(g2, null, "adsfadsf");
 			}
             catch(Exception e)
             {

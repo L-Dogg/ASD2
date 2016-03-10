@@ -62,62 +62,43 @@ namespace ASD.Lab03
 			if (g.Directed == true)
 				throw new Lab03Exception();
 			
-			ver = new int[g.VerticesCount];
+			int[] tmp = new int[g.VerticesCount];
 			if (g.EdgesCount == 0)
 			{
+				ver = new int[g.VerticesCount];
 				for (int i = 0; i < g.VerticesCount; i++)
 					ver[i] = 1;
 				return true;
 			}
-
-			for (int i = 0; i < g.VerticesCount; i++)
-				ver[i] = 0;
+			
 			for (int i = 0; i < g.VerticesCount; i++)
 			{
-				switch (ver[i])
-				{
-					case 0:
-					{
-						ver[i] = 1;
-						foreach (Edge e in g.OutEdges(i))
-						{
-							if (ver[e.To] == 1)
-							{
-								ver = null;
-								return false;
-							}
-							ver[e.To] = 2;
-						}
-						break;
-					}
-					case 1:
-					{
-						foreach (Edge e in g.OutEdges(i))
-						{
-							if (ver[e.To] == 1)
-							{
-								ver = null;
-								return false;
-							}
-							ver[e.To] = 2;
-						}
-					}
-					break;
-					case 2:
-					{
-						foreach (Edge e in g.OutEdges(i))
-						{
-							if (ver[e.To] == 2)
-							{
-								ver = null;
-								return false;
-							}
-							ver[e.To] = 1;
-						}
-					}
-					break;
-				}//switch
-			}//for
+				tmp[i] = 0;
+			}
+			Predicate<Edge> predEdge = delegate (Edge e)
+			{
+				if (tmp[e.From] == 0)
+					tmp[e.From] = 1;
+				if (tmp[e.From] == tmp[e.To])
+					return false;
+
+				tmp[e.To] = (tmp[e.From] == 1) ? 2 : 1;
+				return true;
+			};
+			Predicate<int> predVert = delegate (int i)
+			{
+				if (tmp[i] == 0)
+					tmp[i] = 1;
+				return true;
+			};
+			int cc;
+			if(!g.GeneralSearchAll<EdgesQueue>(predVert, predEdge, out cc, null))
+			{
+				ver = null;
+				return false;
+			}
+			ver = tmp;
+
 			return true;
 		}
 
