@@ -59,25 +59,68 @@ namespace ASD.Lab03
 
 		public static bool Lab03IsBipartite(this Graph g, out int[] ver)
 		{
+			if (g.Directed == true)
+				throw new Lab03Exception();
+			
 			ver = new int[g.VerticesCount];
+			if (g.EdgesCount == 0)
+			{
+				for (int i = 0; i < g.VerticesCount; i++)
+					ver[i] = 1;
+				return true;
+			}
+
 			for (int i = 0; i < g.VerticesCount; i++)
 				ver[i] = 0;
 			for (int i = 0; i < g.VerticesCount; i++)
 			{
-				if(ver[i] == 0)
+				switch (ver[i])
 				{
-					ver[i] = 1;
-					foreach (Edge e in g.OutEdges(i))
+					case 0:
 					{
-						if (ver[e.To] == 1)
-							return false;
-						ver[e.To] = 2;
+						ver[i] = 1;
+						foreach (Edge e in g.OutEdges(i))
+						{
+							if (ver[e.To] == 1)
+							{
+								ver = null;
+								return false;
+							}
+							ver[e.To] = 2;
+						}
+						break;
 					}
-				}
-			}
+					case 1:
+					{
+						foreach (Edge e in g.OutEdges(i))
+						{
+							if (ver[e.To] == 1)
+							{
+								ver = null;
+								return false;
+							}
+							ver[e.To] = 2;
+						}
+					}
+					break;
+					case 2:
+					{
+						foreach (Edge e in g.OutEdges(i))
+						{
+							if (ver[e.To] == 2)
+							{
+								ver = null;
+								return false;
+							}
+							ver[e.To] = 1;
+						}
+					}
+					break;
+				}//switch
+			}//for
 			return true;
 		}
-		}
+
 		// Część 3
 		// Wyznaczanie minimalnego drzewa rozpinającego algorytmem Kruskala
 		//   1.5 pkt
