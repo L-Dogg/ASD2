@@ -186,8 +186,9 @@ namespace ASD.Lab03
         {
 			if (g.Directed == true)
 				throw new Lab03Exception();
-
-			bool[] visited = new bool[g.VerticesCount];
+			if (g.EdgesCount > g.VerticesCount - 1)
+				return false;
+			/*bool[] visited = new bool[g.VerticesCount];
 			int[] from = new int[g.VerticesCount];
 			Predicate<Edge> IsTree = delegate (Edge e)
 			{
@@ -201,10 +202,11 @@ namespace ASD.Lab03
 				visited[e.To] = true;
 				from[e.To] = e.From;
 				return true;
-			};
+			};*/
 
 			int cc;
-			return g.GeneralSearchAll<EdgesQueue>(null, IsTree, out cc);
+			g.GeneralSearchAll<EdgesQueue>(null, null, out cc);
+			return g.EdgesCount == g.VerticesCount - cc;
         }
 
     }
