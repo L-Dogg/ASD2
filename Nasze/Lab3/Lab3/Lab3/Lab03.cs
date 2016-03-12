@@ -129,8 +129,6 @@ namespace ASD.Lab03
 
 			Graph ret = g.IsolatedVerticesGraph();
 			EdgesMinPriorityQueue pq = new EdgesMinPriorityQueue();
-			// hashset, zeby nie dodawac dwa razy tej samej krawedzi:
-			//HashSet<Edge> hs = new HashSet<Edge>();
 			for (int i = 0; i < g.VerticesCount; i++)
 			{
 				foreach (Edge e in g.OutEdges(i))
