@@ -60,6 +60,8 @@ namespace ASD.Lab03
 				throw new Lab03Exception();
 			
 			int[] tmp = new int[g.VerticesCount];
+
+			// Graf zlozony tylko z wierzcholkow izolowanych:
 			if (g.EdgesCount == 0)
 			{
 				ver = new int[g.VerticesCount];
@@ -67,11 +69,16 @@ namespace ASD.Lab03
 					ver[i] = 1;
 				return true;
 			}
-			
-			for (int i = 0; i < g.VerticesCount; i++)
+
+			// Predykat dla wierzcholka izolowanego:
+			Predicate<int> predVert = delegate (int i)
 			{
-				tmp[i] = 0;
-			}
+				if (g.OutDegree(i) == 0)
+					tmp[i] = 1;
+				return true;
+			};
+
+			// Predykat do kolorowania krawedzi:
 			Predicate<Edge> predEdge = delegate (Edge e)
 			{
 				if (tmp[e.From] == 0)
@@ -86,12 +93,13 @@ namespace ASD.Lab03
 
 				return true;
 			};
-			Predicate<int> predVert = delegate (int i)
+
+			// Wszystkie wierzcholki nieodwiedzone:
+			for (int i = 0; i < g.VerticesCount; i++)
 			{
-				if (g.OutDegree(i) == 0)
-					tmp[i] = 1;
-				return true;
-			};
+				tmp[i] = 0;
+			}
+
 			int cc;
 			if(!g.GeneralSearchAll<EdgesQueue>(predVert, predEdge, out cc, null))
 			{
@@ -128,6 +136,7 @@ namespace ASD.Lab03
 			if (g.Directed == true)
 				throw new Lab03Exception();
 
+			// Dodanie krawedzi do kolejki:
 			Graph ret = g.IsolatedVerticesGraph();
 			EdgesMinPriorityQueue pq = new EdgesMinPriorityQueue();
 			for (int i = 0; i < g.VerticesCount; i++)
@@ -182,8 +191,9 @@ namespace ASD.Lab03
 			if (g.EdgesCount > g.VerticesCount - 1)
 				return false;
 
-			int cc;
+			int cc;	// liczba skladowych spojnosci
 			g.GeneralSearchAll<EdgesQueue>(null, null, out cc);
+			// sprawdzenie czy zachodzi wzor:
 			return g.EdgesCount == g.VerticesCount - cc;
         }
 
