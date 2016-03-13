@@ -3,6 +3,12 @@ using ASD.Graphs;
 
 namespace ASD.Lab03
 {
+	class Lab03Exception : ApplicationException
+	{
+		public Lab03Exception(bool rec = true) { }
+		public Lab03Exception(string msg) : base(msg) { }
+		public Lab03Exception(string msg, Exception ex) : base(msg, ex) { }
+	}
 	public static class Lab03GraphExtender
 	{
 
