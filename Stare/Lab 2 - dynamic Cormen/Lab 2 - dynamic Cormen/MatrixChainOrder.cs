@@ -16,13 +16,13 @@ namespace Lab_2___dynamic_Cormen
 		public int MatrixChain(int[] dim)
 		{
 			n = dim.Length - 1;
-			m = new int[n+1, n+1];
-			s = new int[n+1, n+1];
+			m = new int[n+1, n+1];	// tablica kosztów
+			s = new int[n+1, n+1];	// 
 			for (int i = 1; i <= n; i++)
 				m[i, i] = 0;
 
 			int q, j;
-			for(int l = 2; l <= n; l++)	//liczba macierzy w ciagu
+			for(int l = 2; l <= n; l++)	// l - liczba macierzy w ciągu
 			{
 				for(int i = 1; i <= n - l + 1; i++)
 				{

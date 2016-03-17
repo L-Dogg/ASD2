@@ -26,7 +26,8 @@ namespace Lab_2___dynamic_Cormen
 				q = int.MinValue;
 				for(int i = 1; i <= j; i++)
 				{
-					//q = Math.Max(q, price[i] + income[j - i]);
+					// Bierzemy całą kłodę długości i + resztę długości j-i
+					// (przychód dla j-i obliczony)
 					if(q < price[i] + income[j - i])
 					{
 						q = price[i] + income[j - i];
