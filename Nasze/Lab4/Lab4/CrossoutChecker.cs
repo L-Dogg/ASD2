@@ -71,28 +71,35 @@ namespace ASD
 					(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1])))	// czy fragment jest wzorcem lub konkatenacją 2 wzorców
 					b[i, i + 1] = true;
 			}
-//			printb(b);
 			int j;
-			for (int l = 3; l < len; l++)   // właściwe sprawdzenie: od fragmentow dlugosci 3
+			for (int l = 3; l <= len; l++)  
 			{
 				for(int i = 0; i < len - l + 1; i++)
 				{
-					j = i + l - 1;			// ustawiamy koniec podciągu długości l o poczatku i
-					for(int k = i; k < j; k++)
+					j = i + l - 1;
+					for(int k = i; k < j - 1; k++)
 					{
-						if (k + 1 < j)      // żeby nie wyjść za tablicę
+						if (b[i, k] && b[k + 1, j])
 						{
-							if (b[i, k] && b[k + 1, j])
-							{
-								b[i, j] = true;
-								break;
-							}
+							b[i, j] = true;
+							break;
 						}
-						// przypadek typu AxB z przykladu: wycieramy x a potem AB:
-						
 					}
+					if (comparePattern(patterns, sequence[i], sequence[j]) ||
+						(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j])))
+						if (b[i + 1, j - 1])
+							b[i, j] = true;
 				}
 			}
+			/*for(int i = 0; i < len - 1; i++)
+			{
+				if (b[0, i] && b[i + 1, len - 1])
+					b[0, len - 1] = true;
+			}
+			if (comparePattern(patterns, sequence[0], sequence[len - 1]) ||
+				(comparePattern(patterns, sequence[0]) && comparePattern(patterns, sequence[len - 1])))
+					if(b[1, len-2])
+						b[0, len - 1] = true;*/
             return b[0, len - 1];
         }
 		public static void printb(bool[,] tab)
