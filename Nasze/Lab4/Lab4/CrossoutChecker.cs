@@ -49,27 +49,49 @@ namespace ASD
         {
             crossoutsNumber = -1;
 			if (sequence.Length == 0)
+			{
+				crossoutsNumber = 0;
 				return true;
+			}
 			if (sequence.Length == 1)
+			{
 				if (comparePattern(patterns, sequence[0]))
+				{
+					crossoutsNumber = 1;
 					return true;
+				}
+			}
 			if (sequence.Length == 2)
-				if (comparePattern(patterns, sequence[0], sequence[1]) || 
-					(comparePattern(patterns, sequence[0]) && comparePattern(patterns, sequence[1])))
+			{
+				if (comparePattern(patterns, sequence[0], sequence[1]))
+				{
+					crossoutsNumber = 1;
 					return true;
-
+				}
+				else if (comparePattern(patterns, sequence[0]) && comparePattern(patterns, sequence[1]))
+				{
+					crossoutsNumber = 2;
+					return true;
+				}
+			}
 			int len = sequence.Length;
-			bool[,] b = new bool[len, len];		// b[i,j] - czy fragment spojny [i,j] jest wymazywalny
+			int[,] b = new int[len, len];       // b[i,j] - czy fragment spojny [i,j] jest wymazywalny
+
+			for (int i = 0; i < len; i++)
+				for (int k = 0; k < len; k++)
+					b[i, k] = int.MaxValue;
 
 			for (int i = 0; i < len; i++)		// dla ciągów jednoelementowych
 				if (comparePattern(patterns, sequence[i]))
-					b[i, i] = true;
+					b[i, i] = 1;
 
 			for (int i = 0; i < len - 1; i++)	// dla ciągów dwuelementowych
 			{
-				if (comparePattern(patterns, sequence[i], sequence[i + 1]) ||
-					(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1])))	// czy fragment jest wzorcem lub konkatenacją 2 wzorców
-					b[i, i + 1] = true;
+				if (comparePattern(patterns, sequence[i], sequence[i + 1]))
+					b[i, i + 1] = 1;
+				else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1]))
+					b[i, i + 1] = 2;
+					
 			}
 			int j;
 			for (int l = 3; l <= len; l++)  
@@ -77,30 +99,28 @@ namespace ASD
 				for(int i = 0; i < len - l + 1; i++)
 				{
 					j = i + l - 1;
-					for(int k = i; k < j - 1; k++)
+					for(int k = i; k < j; k++)
 					{
-						if (b[i, k] && b[k + 1, j])
+						if (b[i, k] != int.MaxValue && b[k + 1, j] != int.MaxValue)
 						{
-							b[i, j] = true;
-							break;
+							if(b[i, k] + b[k + 1, j] < b[i,j])
+								b[i, j] = b[i, k] + b[k + 1, j];
 						}
 					}
-					if (comparePattern(patterns, sequence[i], sequence[j]) ||
-						(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j])))
-						if (b[i + 1, j - 1])
-							b[i, j] = true;
+					if (comparePattern(patterns, sequence[i], sequence[j]))
+					{
+						if (b[i + 1, j - 1] != int.MaxValue)
+							b[i, j] = b[i + 1, j - 1] + 1;
+					}
+					else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j]))
+					{
+						if (b[i + 1, j - 1] != int.MaxValue)
+							b[i, j] = b[i + 1, j - 1] + 2;
+					}
 				}
 			}
-			/*for(int i = 0; i < len - 1; i++)
-			{
-				if (b[0, i] && b[i + 1, len - 1])
-					b[0, len - 1] = true;
-			}
-			if (comparePattern(patterns, sequence[0], sequence[len - 1]) ||
-				(comparePattern(patterns, sequence[0]) && comparePattern(patterns, sequence[len - 1])))
-					if(b[1, len-2])
-						b[0, len - 1] = true;*/
-            return b[0, len - 1];
+			crossoutsNumber = b[0, len - 1];
+            return b[0, len - 1] != int.MaxValue;
         }
 		public static void printb(bool[,] tab)
 		{
