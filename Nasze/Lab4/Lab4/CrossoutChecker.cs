@@ -80,22 +80,24 @@ namespace ASD
 				}
 			}
 			int len = sequence.Length;
-			int[,] b = new int[len, len];       // b[i,j] - czy fragment spojny [i,j] jest wymazywalny
+			int[][] b = new int[len][];       // b[i,j] - czy fragment spojny [i,j] jest wymazywalny
+			for (int i = 0; i < len; i++)
+				b[i] = new int[len - i];
 
 			for (int i = 0; i < len; i++)
-				for (int k = 0; k < len; k++)
-					b[i, k] = int.MaxValue;
+				for (int k = 0; k < len - i; k++)
+					b[i][k] = int.MaxValue;
 
 			for (int i = 0; i < len; i++)       // dla ciągów jednoelementowych
 				if (comparePattern(patterns, sequence[i]))
-					b[i, i] = 1;
+					b[i][0] = 1;
 
 			for (int i = 0; i < len - 1; i++)   // dla ciągów dwuelementowych
 			{
 				if (comparePattern(patterns, sequence[i], sequence[i + 1]))
-					b[i, i + 1] = 1;
+					b[i][1] = 1;
 				else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1]))
-					b[i, i + 1] = 2;
+					b[i][1] = 2;
 
 			}
 			int j;
@@ -106,26 +108,26 @@ namespace ASD
 					j = i + l - 1;
 					for (int k = i; k < j; k++)
 					{
-						if (b[i, k] != int.MaxValue && b[k + 1, j] != int.MaxValue)
+						if (b[i][k - i] != int.MaxValue && b[k + 1][j - k - 1] != int.MaxValue)
 						{
-							if (b[i, k] + b[k + 1, j] < b[i, j])
-								b[i, j] = b[i, k] + b[k + 1, j];
+							if (b[i][k - i] + b[k + 1][j - k - 1] < b[i][j - i])
+								b[i][j - i] = b[i][k - i] + b[k + 1][j - k - 1];
 						}
 					}
 					if (comparePattern(patterns, sequence[i], sequence[j]))
 					{
-						if (b[i + 1, j - 1] != int.MaxValue)
-							b[i, j] = b[i + 1, j - 1] + 1;
+						if (b[i + 1][j - 1 - i - 1] != int.MaxValue)
+							b[i][j - i] = b[i + 1][j - 1 - i - 1] + 1;
 					}
 					else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j]))
 					{
-						if (b[i + 1, j - 1] != int.MaxValue)
-							b[i, j] = b[i + 1, j - 1] + 2;
+						if (b[i + 1][j - 1 - i - 1] != int.MaxValue)
+							b[i][j - i] = b[i + 1][j - 1 - i - 1] + 2;
 					}
 				}
 			}
-			crossoutsNumber = b[0, len - 1];
-			return b[0, len - 1] != int.MaxValue;
+			crossoutsNumber = b[0][len - 1];
+			return b[0][len - 1] != int.MaxValue;
 		}
 
 		/// <summary>
@@ -160,16 +162,18 @@ namespace ASD
 			}
 
 			int len = sequence.Length;
-			int[,] b = new int[len, len];       //b[i,j] najdluzsza dlugosc podciagu wymazywalnego od i do j
+			int[][] b = new int[len][];       //b[i,j] najdluzsza dlugosc podciagu wymazywalnego od i do j
+			for (int i = 0; i < len; i++)
+				b[i] = new int[len - i];
 
 			for (int i = 0; i < len; i++)       // dla ciągów jednoelementowych
 				if (comparePattern(patterns, sequence[i]))
-					b[i, i] = 1;
+					b[i][0] = 1;
 
 			for (int i = 0; i < len - 1; i++)   // dla ciągów dwuelementowych
 				if (comparePattern(patterns, sequence[i], sequence[i + 1]) ||
 					(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1])))
-					b[i, i + 1] = 2;
+					b[i][1] = 2;
 
 			int j;
 			for (int l = 3; l <= len; l++)
@@ -178,23 +182,23 @@ namespace ASD
 				{
 					j = i + l - 1;
 					for (int k = i; k < j; k++)
-						if (b[i, k] + b[k + 1, j] > b[i, j])
-							b[i, j] = b[i, k] + b[k + 1, j];
+						if (b[i][k - i] + b[k + 1][j - k - 1] > b[i][j - i])
+							b[i][j - i] = b[i][k - i] + b[k + 1][j - k - 1];
 
 					if (comparePattern(patterns, sequence[i], sequence[j]))
 					{
-						if (b[i + 1, j - 1] != l - 2)
+						if (b[i + 1][j - 1 - i - 1] != l - 2)
 							continue;
-						else if (b[i, j] < b[i + 1, j - 1] + 2)
-							b[i, j] = b[i + 1, j - 1] + 2;
+						else if (b[i][j - i] < b[i + 1][j - 1 - i - 1] + 2)
+							b[i][j - i] = b[i + 1][j - 1 - i - 1] + 2;
 					}
 					else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j]) &&
-							b[i, j] < b[i + 1, j - 1] + 2)
-						b[i, j] = b[i + 1, j - 1] + 2;
+							b[i][j - i] < b[i + 1][j - 1 - i - 1] + 2)
+						b[i][j - i] = b[i + 1][j - 1 - i - 1] + 2;
 				}
 			}
 
-			return len - b[0, len - 1];
+			return len - b[0][len - 1];
 		}
 
 		// można dopisać metody pomocnicze
