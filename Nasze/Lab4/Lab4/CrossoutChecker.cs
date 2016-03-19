@@ -140,8 +140,101 @@ namespace ASD
         /// <returns></returns>
         public static int MinimumRemainder(char[] sequence, char[][] patterns)
         {
-            return -1;
-        }
+			int crossoutsNumber = -1;
+			if (sequence.Length == 0)
+			{
+				return 0;
+			}
+			if (sequence.Length == 1)
+			{
+				if (comparePattern(patterns, sequence[0]))
+				{
+					return 0;
+				}
+				return 1;
+			}
+			if (sequence.Length == 2)
+			{
+				if (comparePattern(patterns, sequence[0], sequence[1]))
+				{
+					return 0;
+				}
+				else if (comparePattern(patterns, sequence[0]) && comparePattern(patterns, sequence[1]))
+				{
+					return 0;
+				}
+				else if (comparePattern(patterns, sequence[0]) || comparePattern(patterns, sequence[1]))
+				{
+					return 1;
+				}
+				return 2;
+			}
+			int len = sequence.Length;
+			int[,] b = new int[len, len];	// najdluzsza dlugosc podciagu wymazywalnego w [i,j]
+			bool[,] p = new bool[len, len]; // b[i,j] - czy fragment spojny [i,j] jest wymazywalny
+			/*for (int i = 0; i < len; i++)
+				for (int k = 0; k < len; k++)
+					b[i, k] = 0;
+			*/
+			for (int i = 0; i < len; i++)       // dla ciągów jednoelementowych
+				if (comparePattern(patterns, sequence[i]))
+				{
+					p[i, i] = true;
+					b[i, i] = 1;
+				}
+
+			for (int i = 0; i < len - 1; i++)   // dla ciągów dwuelementowych
+			{
+				if (comparePattern(patterns, sequence[i], sequence[i + 1]) ||
+					(comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[i + 1])))
+				{
+					b[i, i + 1] = 2;
+					p[i, i + 1] = true;
+				}
+
+			}
+			int j;
+			for (int l = 3; l <= len; l++)
+			{
+				for (int i = 0; i < len - l + 1; i++)
+				{
+					j = i + l - 1;
+					for (int k = i; k < j; k++)
+					{
+						if (p[i, k]  && p[k + 1, j])
+						{
+							p[i, j] = true;
+						}
+
+						if (b[i, k] + b[k + 1, j] > b[i, j])
+							b[i, j] = b[i, k] + b[k + 1, j];
+					}
+					if (comparePattern(patterns, sequence[i], sequence[j]))
+					{
+						if (p[i + 1, j - 1])
+						{
+							p[i, j] = true;
+						}
+
+						if (b[i, j] < b[i + 1, j - 1] + 2)
+							b[i, j] = b[i + 1, j - 1] + 2;
+					}
+					else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j]))
+					{
+						if (p[i + 1, j - 1])
+						{
+							p[i, j] = true;
+						}
+
+						if (b[i, j] < b[i + 1, j - 1] + 2)
+							b[i, j] = b[i + 1, j - 1] + 2;
+					}
+				}
+			}
+			if (p[0, len - 1])
+				return 0;
+			return len - b[0, len-1];
+		}
 
     // można dopisać metody pomocnicze
 
