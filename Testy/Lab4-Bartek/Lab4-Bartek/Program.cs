@@ -15,16 +15,19 @@ namespace ASD
 		protected int expectedCrossoutsNumber;
 		protected int expectedRemainderNumber;
 		public static int testCount;
+		public static int testNumber;
 		public static int testSuccess;
+		public static TimeSpan totalTime;
 
 		public CrossoutTest(int minLength)
 		{
+			testCount++;
 			GeneratePatterns();
 			testSequence = GenerateTestString(minLength, out expectedCrossoutsNumber, out expectedRemainderNumber);
 		}
 		public void RunTest()
 		{
-			testCount++;
+			testNumber++;
 			bool actualErasable;
 			int actualCrossoutsNumber, actualRemainderNumber;
 			DateTime begin;
@@ -60,6 +63,7 @@ namespace ASD
 				return;
 			}
 			elapsed = DateTime.Now - begin;
+			totalTime += elapsed;
 			PrintMessage(String.Format("Elapsed time: {0}", elapsed));
 
 			try
@@ -80,7 +84,7 @@ namespace ASD
 		}
 		private void PrintTestInfo()
 		{
-			Console.WriteLine("Test {0}: {1}", testCount, testName);
+			Console.WriteLine("Test {0}: {1}", testNumber, testName);
 		}
 		private void PrintMessage(string message)
 		{
@@ -131,23 +135,36 @@ namespace ASD
 			new ZeroLengthCrossoutTest(0),
 			new CrossoutAllConcatenateTest(5),
 			new CrossoutAllConcatenateTest(10),
+			new CrossoutAllConcatenateTest(25),
 			new CrossoutAllConcatenateTest(50),
+			new CrossoutAllConcatenateTest(100),
+			new CrossoutAllConcatenateTest(250),
 			new CrossoutAllConcatenateTest(500),
 			new CrossoutAllConcatenateTest(1000),
 			new CrossoutAllInsertTest(5),
 			new CrossoutAllInsertTest(10),
+			new CrossoutAllInsertTest(25),
 			new CrossoutAllInsertTest(50),
+			new CrossoutAllInsertTest(100),
+			new CrossoutAllInsertTest(250),
 			new CrossoutAllInsertTest(500),
 			new CrossoutAllInsertTest(1000),
 			new CrossoutAllAmbiguousTest(50),
+			new CrossoutAllAmbiguousTest(100),
+			new CrossoutAllAmbiguousTest(250),
 			new CrossoutAllAmbiguousTest(500),
 			new CrossoutAllAmbiguousTest(1000),
 			new CrossoutPartConcatenateTest(5),
 			new CrossoutPartConcatenateTest(10),
+			new CrossoutPartConcatenateTest(25),
 			new CrossoutPartConcatenateTest(50),
+			new CrossoutPartConcatenateTest(100),
+			new CrossoutPartConcatenateTest(250),
 			new CrossoutPartConcatenateTest(500),
 			new CrossoutPartConcatenateTest(1000),
 			new CrossoutPartWrapTest(50),
+			new CrossoutPartWrapTest(100),
+			new CrossoutPartWrapTest(100),
 			new CrossoutPartWrapTest(500),
 			new CrossoutPartWrapTest(1000)
 		};
@@ -156,9 +173,10 @@ namespace ASD
 		{
 			foreach (CrossoutTest test in tests)
 				test.RunTest();
-			Console.WriteLine("Result: {0} out of {1} tests successful",
+			Console.WriteLine("Result: {0} out of {1} tests successful; time taken: {2}",
 				CrossoutTest.testSuccess,
-				CrossoutTest.testCount);
+				CrossoutTest.testCount,
+				CrossoutTest.totalTime);
 		}
 	}
 
@@ -189,7 +207,7 @@ namespace ASD
 
 		protected override char[] GenerateTestString(int minLength, out int crossoutsNumber, out int remainderNumber)
 		{
-			Random rng = new Random(testCount);
+			Random rng = new Random(1087 * testCount);
 			List<char> sequenceList = new List<char>();
 			crossoutsNumber = 0;
 			remainderNumber = 0;
@@ -215,7 +233,7 @@ namespace ASD
 
 		protected override char[] GenerateTestString(int minLength, out int crossoutsNumber, out int remainderNumber)
 		{
-			Random rng = new Random(testCount);
+			Random rng = new Random(2029 * testCount);
 			List<char> sequenceList = new List<char>();
 			crossoutsNumber = 0;
 			remainderNumber = 0;
@@ -242,7 +260,7 @@ namespace ASD
 		protected override char[] GenerateTestString(int minLength, out int crossoutsNumber, out int remainderNumber)
 		{
 			PrepareAmbiguousPatterns();
-			Random rng = new Random(testCount);
+			Random rng = new Random(3167 * testCount);
 			List<char> sequenceList = new List<char>();
 			List<char> ambiguousLeft = new List<char>(ambiguousChars);
 			crossoutsNumber = 0;
@@ -306,7 +324,7 @@ namespace ASD
 		protected override char[] GenerateTestString(int minLength, out int crossoutsNumber, out int remainderNumber)
 		{
 			GenerateForbiddenPatterns();
-			Random rng = new Random(testCount);
+			Random rng = new Random(4051 * testCount);
 			List<char> sequenceList = new List<char>();
 			crossoutsNumber = 0;
 			remainderNumber = 0;
@@ -357,7 +375,7 @@ namespace ASD
 		protected override char[] GenerateTestString(int minLength, out int crossoutsNumber, out int remainderNumber)
 		{
 			GenerateForbiddenPatterns();
-			Random rng = new Random(testCount);
+			Random rng = new Random(5227 * testCount);
 			List<char> sequenceList = new List<char>();
 			List<char[]> unusedPatterns = new List<char[]>(testPatterns);
 			crossoutsNumber = 0;
