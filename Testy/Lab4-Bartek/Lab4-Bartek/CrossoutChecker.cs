@@ -116,12 +116,12 @@ namespace ASD
 					}
 					if (comparePattern(patterns, sequence[i], sequence[j]))
 					{
-						if (b[i + 1][j - 1 - i - 1] != int.MaxValue)
+						if (b[i + 1][j - 1 - i - 1] != int.MaxValue && b[i][j - i] > b[i + 1][j - 1 - i - 1] + 1)
 							b[i][j - i] = b[i + 1][j - 1 - i - 1] + 1;
 					}
 					else if (comparePattern(patterns, sequence[i]) && comparePattern(patterns, sequence[j]))
 					{
-						if (b[i + 1][j - 1 - i - 1] != int.MaxValue)
+						if (b[i + 1][j - 1 - i - 1] != int.MaxValue && b[i][j - i] > b[i + 1][j - 1 - i - 1] + 2)
 							b[i][j - i] = b[i + 1][j - 1 - i - 1] + 2;
 					}
 				}

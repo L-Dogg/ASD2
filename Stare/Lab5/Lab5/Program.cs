@@ -41,7 +41,7 @@ namespace AiSD_Lab5
                     Height = 3,
                     SideLength = 100,
                     ShortcutLength = 141,
-                    Shortcuts = new[] { new Location(0, 0), new Location(2, 1), new Location(0, 1) },
+                    Shortcuts = new[] { new Location(0, 0), new Location(1, 1), new Location(0, 1) },
                     ExpectedResult = 382,
                     ExpectedNoOfPaths = 1
                 },
