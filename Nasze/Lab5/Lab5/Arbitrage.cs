@@ -5,15 +5,15 @@ namespace AsdLab5
 {
 	public class InvalidExchangeException : Exception
 	{
-		public InvalidExchangeException ()
+		public InvalidExchangeException()
 		{
 		}
 
-		public InvalidExchangeException (string msg) : base(msg)
+		public InvalidExchangeException(string msg) : base(msg)
 		{
 		}
 
-		public InvalidExchangeException (string msg, Exception ex) : base(msg, ex)
+		public InvalidExchangeException(string msg, Exception ex) : base(msg, ex)
 		{
 		}
 	}
@@ -24,10 +24,10 @@ namespace AsdLab5
 		public readonly int To;
 		public readonly double Price;
 
-		public ExchangePair (int from, int to, double price)
+		public ExchangePair(int from, int to, double price)
 		{
 			if (to < 0 || from < 0 || price <= 0.0)
-				throw new InvalidExchangeException ();
+				throw new InvalidExchangeException();
 			From = from;
 			To = to;
 			Price = price;
@@ -36,25 +36,27 @@ namespace AsdLab5
 
 	public class CurrencyGraph
 	{
-		private static double priceToWeight (double price)
+		private static double priceToWeight(double price)
 		{
-			return -Math.Log (price);
+			return -Math.Log(price);
 		}
 
-		private static double weightToPrice (double weight)
+		private static double weightToPrice(double weight)
 		{
-			return Math.Exp (-weight);
+			return Math.Exp(-weight);
 		}
 
 		private double[,] weights;
 
-		public CurrencyGraph (int n, ExchangePair[] exchanges)
+		public CurrencyGraph(int n, ExchangePair[] exchanges)
 		{
 			weights = new double[n, n];
 			for (int i = 0; i < n; i++)
 				for (int j = 0; j < n; j++)
 					weights[i, j] = double.MaxValue;
-			foreach(var ep in exchanges)
+			if (exchanges == null)
+				return;
+			foreach (var ep in exchanges)
 			{
 				weights[ep.From, ep.To] = priceToWeight(ep.Price);
 			}
@@ -64,7 +66,7 @@ namespace AsdLab5
 		// currency: waluta "startowa"
 		// bestPrices: najlepszy (najwyzszy) kurs wszystkich walut w stosunku do currency (byc mo¿e osiagalny za pomoca wielu wymian)
 		// jesli wynik == false to bestPrices = null
-		public bool findBestPrice (int currency, out double[] bestPrices)
+		public bool findBestPrice(int currency, out double[] bestPrices)
 		{
 			//
 			// wywolac odpowiednio FordBellmanShortestPaths
@@ -80,7 +82,7 @@ namespace AsdLab5
 
 			for (int i = 0; i < n; i++)
 			{
-				if(i == currency)
+				if (i == currency)
 				{
 					bestPrices[i] = 1;
 					continue;
@@ -97,7 +99,7 @@ namespace AsdLab5
 		// currency: waluta "startowa"
 		// exchangeCycle: a cycle of currencies starting from 'currency' and ending with 'currency'
 		//  jesli wynik == false to exchangeCycle = null
-		public bool findArbitrage (int currency, out int[]exchangeCycle)
+		public bool findArbitrage(int currency, out int[] exchangeCycle)
 		{
 			//
 			// Czêœæ 1: wywolac odpowiednio FordBellmanShortestPaths
@@ -116,7 +118,7 @@ namespace AsdLab5
 		// s: wierzcho³ek startowy
 		// dist: obliczone odleglosci
 		// prev: tablica "poprzednich"
-		private bool FordBellmanShortestPaths (int s, out double[] dist, out int[] prev)
+		private bool FordBellmanShortestPaths(int s, out double[] dist, out int[] prev)
 		{
 			dist = null;
 			prev = null;
@@ -124,7 +126,7 @@ namespace AsdLab5
 			dist = new double[n];
 
 			prev = new int[n];
-			for(int i = 0; i < n; i++)
+			for (int i = 0; i < n; i++)
 			{
 				dist[i] = double.MaxValue;
 				prev[i] = -1;
@@ -162,7 +164,7 @@ namespace AsdLab5
 		// dist: tablica odleglosci
 		// prev: tablica "poprzednich"
 		// cycle: wyznaczony cykl (kolejne elementy to kolejne wierzcholki w cyklu, pierwszy i ostatni element musza byc takie same - zamkniêcie cyklu)
-		private bool FindNegativeCostCycle (double[] dist, int[] prev, out int[] cycle)
+		private bool FindNegativeCostCycle(double[] dist, int[] prev, out int[] cycle)
 		{
 			cycle = null;
 			//
@@ -173,8 +175,7 @@ namespace AsdLab5
 			// 3) konstruowanie odpowiedzi zgodnie z wymogami zadania
 			//
 			int n = weights.GetLength(0);
-			int v  = -1;
-			Stack<int> tries = new Stack<int>();
+			int v = -1;
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
@@ -182,30 +183,27 @@ namespace AsdLab5
 					if (weights[i, j] == double.MaxValue) // nie ma tej krawedzi
 						continue;
 					if (dist[j] > dist[i] + weights[i, j])
-						tries.Push(j);
+					{
+						v = j;
+						Stack<int> myCycle = new Stack<int>();
+						myCycle.Push(v);
+						int u = prev[v];
+						int k = 0;
+						while (u != v && k < n)
+						{
+							myCycle.Push(u);
+							u = prev[u];
+							k++;
+						}
+						if (u != v)
+							continue;
+						myCycle.Push(v);
+						cycle = myCycle.ToArray();
+						return true;
+					}
 				}
 			}
-			if (tries.Count == 0)
-				return false;
-			while (tries.Count > 0)
-			{
-				v = tries.Pop();
-				Stack<int> myCycle = new Stack<int>();
-				myCycle.Push(v);
-				int u = prev[v];
-				int k = 0;
-				while (u != v && k < n)
-				{
-					myCycle.Push(u);
-					u = prev[u];
-					k++;
-				}
-				if (u != v)
-					continue;
-				myCycle.Push(v);
-				cycle = myCycle.ToArray();
-				return true;
-			}
+
 			return false;
 		}
 	}

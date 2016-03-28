@@ -23,7 +23,7 @@ namespace AsdLab5
 
 			int testId = 0;
 			int success = 0;
-			/*
+			
 			success += performTestPart1 (++testId, false, 2, 0, exchangeSet1);
 			success += performTestPart1 (++testId, false, 2, 1, exchangeSet1);
 			success += performTestPart1 (++testId, false, 2, 0, exchangeSet2);
@@ -49,7 +49,7 @@ namespace AsdLab5
 			success += performTestPart2 (++testId, new double[] { 1, 1, 2, 4 }, 4, 1, exchangeSet7);
 
 			Console.WriteLine ("=== PART 1 SUMMARY: {0}/{1} passed", success, testId);
-			Console.WriteLine ("");*/
+			Console.WriteLine ("");
 
 			//**************************************************
 			// TEST 3
