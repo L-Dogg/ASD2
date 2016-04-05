@@ -184,6 +184,9 @@ namespace AsdLab5
 						continue;
 					if (dist[j] > dist[i] + weights[i, j])
 					{
+						// Jezeli mozna poprawic, to znaczy ze moze byc ujemny cykl
+						// zaczynajacy sie w wierzcholku j: cofajac sie wrzucamy
+						// wierzcholki na stos:
 						v = j;
 						Stack<int> myCycle = new Stack<int>();
 						myCycle.Push(v);

@@ -172,6 +172,18 @@ namespace ASD.Graphs
 				}
 
 			}
+			// n = |V|
+			/*
+			for i=1 to n
+				do for j = 1 to n
+					do if i = j lub (i,j) e E(g)
+						then t(i,j) = 1
+						else t(i,j) = 0
+			for k = 1 to n
+				do for i = 1 to n
+					do for j = 1 to n
+						t(i,j) = t(i,j) lub (t(i,k) i t(k,j))
+			*/
 			return ret; // zmienic !
 		}
 
