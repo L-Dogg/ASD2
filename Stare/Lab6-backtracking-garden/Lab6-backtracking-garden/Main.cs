@@ -84,8 +84,8 @@ namespace lab7
             Test[] testLarge = { new Test(hypercube, 16, 2), new Test(oddC, 16, 31), new Test(full, 49, 50)};
 
             Console.Out.WriteLine("Małe testy");
-			//for (int i = 0; i < tests.Length; i++)
-			for (int i = 0; i < 1; i++)
+			for (int i = 0; i < tests.Length; i++)
+			//for (int i = 0; i < 1; i++)
 			{
                 PerformTest(i, tests[i]);
             }
