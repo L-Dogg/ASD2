@@ -173,7 +173,72 @@ namespace lab06
 			paths = RoadsGraph.IsolatedVerticesGraph(true, RoadsGraph.VerticesCount);
 			int[] ret = new int[RoadsGraph.VerticesCount];
 
-			return null;
+			//new GraphExport().Export(RoadsGraph);
+
+			PathsInfo[] bestPaths = null;
+			PathsInfo[] curPaths;
+			PathsInfo[][] allPaths = new PathsInfo[RoadsGraph.VerticesCount][];
+
+			int[] costSum = new int[RoadsGraph.VerticesCount];
+			int[] costCur = new int[RoadsGraph.VerticesCount];
+
+			// Dla każdego wierzchołka tworzymy nowy graf, liczymy koszty dojścia
+			// z tego wierzchołka do innych i sumujemy wyniki z resztą w costSum
+			for (int v = 0; v < RoadsGraph.VerticesCount; v++)
+			{
+				// Utworzenie grafu ze zmodyfikowanymi wagami:
+				var tmp = RoadsGraph.IsolatedVerticesGraph(true, RoadsGraph.VerticesCount);
+				for (int i = 0; i < RoadsGraph.VerticesCount; i++)
+				{
+					foreach (Edge e in RoadsGraph.OutEdges(i))
+					{
+						tmp.AddEdge(e.From, e.To, Math.Min(e.Weight + CityCosts[e.To], CityCosts[e.From] + CityCosts[e.To]));
+					}
+				}
+
+				
+				for (int j = 0; j < RoadsGraph.VerticesCount; j++)
+				{
+					costCur[j] = 0;
+				}
+
+				// Obliczenie kosztów w nowym grafie:
+				tmp.DijkstraShortestPaths(v, out curPaths);
+				allPaths[v] = curPaths;
+
+				for (int j = 0; j < RoadsGraph.VerticesCount; j++)
+				{
+					if (j == v)
+						continue;
+					if (curPaths[j].Dist == null)
+						costCur[j] += noEdge;
+					else
+						costCur[j] += curPaths[j].Dist.Value;
+				}
+
+
+				// Dodanie do reszty kosztów:
+				for (int i = 0; i < RoadsGraph.VerticesCount; i++)
+				{
+					if (i == v)
+						continue;
+					costSum[i] += costCur[i];
+				}
+			}
+
+			int bestCost = int.MaxValue;
+			int bestCity = 0;
+
+			for(int i = 0; i < RoadsGraph.VerticesCount; i++)
+			{
+				if(costSum[i] < bestCost)
+				{
+					bestCost = costSum[i];
+					bestCity = i;
+				}
+			}
+
+			return costSum;
         }
 
     }
