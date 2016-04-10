@@ -192,7 +192,7 @@ namespace lab06
 				{
 					foreach (Edge e in RoadsGraph.OutEdges(i))
 					{
-						tmp.AddEdge(e.From, e.To, Math.Min(e.Weight + CityCosts[e.To], CityCosts[e.From] + CityCosts[e.To]));
+						tmp.AddEdge(e.From, e.To, Math.Min(e.Weight, CityCosts[v]) + Math.Min(CityCosts[e.From], CityCosts[v]));
 					}
 				}
 
@@ -204,6 +204,7 @@ namespace lab06
 
 				// Obliczenie kosztów w nowym grafie:
 				tmp.DijkstraShortestPaths(v, out curPaths);
+
 				allPaths[v] = curPaths;
 
 				for (int j = 0; j < RoadsGraph.VerticesCount; j++)
@@ -237,7 +238,31 @@ namespace lab06
 					bestCity = i;
 				}
 			}
+			bestPaths = allPaths[bestCity];
+			
+			// konstrukcja grafu:
 
+			for (int i = 0; i < RoadsGraph.VerticesCount; i++)
+			{
+				if (i == bestCity)
+					continue;
+
+				if (bestPaths[i].Dist == null)
+					paths.AddEdge(i, bestCity, noEdge);
+				else
+				{
+					int j = i;
+					while (j != bestCity)
+					{
+						paths.AddEdge(bestPaths[j].Last.Value.To, bestPaths[j].Last.Value.From,
+							RoadsGraph.GetEdgeWeight(bestPaths[j].Last.Value.To, bestPaths[j].Last.Value.From).Value);
+						j = bestPaths[j].Last.Value.From;
+					}
+				}
+
+			}
+
+			minCost = bestCost;
 			return costSum;
         }
 

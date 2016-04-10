@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ASD.Graphs;
+using System.Diagnostics;
 
 namespace lab06
 {
@@ -102,6 +103,8 @@ namespace lab06
             int[] path;
             bool pass;
 
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
             Console.WriteLine("\nCzesc 0\n");
             for (int testno = 0; testno < graphs.Count-1; ++testno)
             {
@@ -141,7 +144,10 @@ namespace lab06
                     path = pf.FindBestLocationWithoutCityCosts(out minCost, out paths);
                     cr = Graph.Counter - cr;
                     Console.WriteLine("\nTest wydajnosci : {0} ( wzorcowo: {1} )", cr, cgg[0, 4]);
-
+			sw.Stop();
+			Console.WriteLine(sw.Elapsed);
+			sw.Reset();
+			sw.Start();
             Console.WriteLine("\nCzesc 1\n");
             for (int testno = 0; testno < graphs.Count-1; ++testno)
             {
@@ -181,8 +187,11 @@ namespace lab06
                     path = pf.FindBestLocation(out minCost, out paths);
                     cr = Graph.Counter - cr;
                     Console.WriteLine("\nTest wydajnosci : {0} ( wzorcowo: {1} )", cr, cgg[1, 4]);
-
-            Console.WriteLine("\nCzesc 2\n");
+			sw.Stop();
+			Console.WriteLine(sw.Elapsed);
+			sw.Reset();
+			sw.Start();
+			Console.WriteLine("\nCzesc 2\n");
             for (int testno = 0; testno < graphs.Count-1; ++testno)
             {
                     roads = graphs[testno];
@@ -221,8 +230,11 @@ namespace lab06
                     path = pf.FindBestLocationSecondMetric(out minCost, out paths);
                     cr = Graph.Counter - cr;
                     Console.WriteLine("\nTest wydajnosci : {0} ( wzorcowo: {1} )", cr, cgg[2, 4]);
-
-            Console.WriteLine();
+			sw.Stop();
+			Console.WriteLine(sw.Elapsed);
+			sw.Reset();
+			
+			Console.WriteLine();
         }
 
         static void Test0(out Graph roads, out int[] cityCosts, out List<int> result0, out List<int> result1, out List<int> result2, out Graph paths0 , out Graph paths1, out Graph paths2)
