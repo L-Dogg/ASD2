@@ -173,8 +173,6 @@ namespace lab06
 			paths = RoadsGraph.IsolatedVerticesGraph(true, RoadsGraph.VerticesCount);
 			int[] ret = new int[RoadsGraph.VerticesCount];
 
-			//new GraphExport().Export(RoadsGraph);
-
 			PathsInfo[] bestPaths = null;
 			PathsInfo[] curPaths;
 			PathsInfo[][] allPaths = new PathsInfo[RoadsGraph.VerticesCount][];
@@ -230,6 +228,7 @@ namespace lab06
 			int bestCost = int.MaxValue;
 			int bestCity = 0;
 
+			// Wybór najlepszego miasta:
 			for(int i = 0; i < RoadsGraph.VerticesCount; i++)
 			{
 				if(costSum[i] < bestCost)
@@ -240,8 +239,7 @@ namespace lab06
 			}
 			bestPaths = allPaths[bestCity];
 			
-			// konstrukcja grafu:
-
+			// Konstrukcja grafu:
 			for (int i = 0; i < RoadsGraph.VerticesCount; i++)
 			{
 				if (i == bestCity)
