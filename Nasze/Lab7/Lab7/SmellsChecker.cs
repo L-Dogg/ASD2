@@ -45,6 +45,7 @@ namespace Lab07
 
 		public Boolean AssignSmells(out bool[] smells)
         {
+			_canFinish = true;
 			_sukces = true;
             smells = new bool[smellCount];
 			_poziomUsatysf = new int[_ileKlientow];
@@ -58,29 +59,6 @@ namespace Lab07
 
 		public void backtrackingHelper(int iter, int last, ref bool[] smells)
 		{
-			_sukces = true;
-			for(int i = 0; i < _ileKlientow; i++)
-			{
-				if(_sukces &&_poziomUsatysf[i] < satisfactionLevel)
-				{
-					_sukces = false;
-					break;
-				}
-				if(satisfactionLevel - _poziomUsatysf[i] > smellCount - iter)
-				{
-					_canFinish = false;
-					break;
-				}
-			}
-			if(_canFinish == false)
-			{
-				return;
-			}
-			if (_sukces == true)
-			{
-				return;
-			}
-
 			if(iter == smellCount)
 			{
 				return;
@@ -90,14 +68,41 @@ namespace Lab07
 			{
 				if (smells[i] == true)
 					continue;
-				if (smells[i] == false && i > last)
+				
+				if (smells[i] == false)
 				{
+					_sukces = true;
 					for (int j = 0; j < _ileKlientow; j++)
 					{
 						_poziomUsatysf[j] += customerPreferences[j][i];
+						if (_sukces)
+						{
+							if (_poziomUsatysf[j] < satisfactionLevel)
+							{
+								_sukces = false;
+								if (satisfactionLevel - _poziomUsatysf[j] > smellCount - iter)
+								{
+									_canFinish = false;
+									break;
+								}
+							}
+						}
+
 					}
+
+					if (_canFinish == false)
+					{
+						_sukces = false;
+						return;
+					}
+					
 					smells[i] = true;
+					if (_sukces)
+					{
+						return;
+					}
 					backtrackingHelper(iter + 1, i, ref smells);
+
 					if (_sukces)
 						return;
 					if(_canFinish == false)
