@@ -132,72 +132,76 @@ namespace Lab07
 		/// <returns>Maksymalna liczba klientów, których można usatysfakcjonować</returns>
 		/// <param name="smells">Wyjściowa tablica rozpylonych zapachów, realizująca ten poziom satysfakcji</param>
 
-		private int _maxCust = 0;
-		private bool[] bestSmell;
-		private int _zadowoleni = 0;
-		private bool _canFinish = true;
+		private int _maxCust;
+		private bool[] _bestSmell;
+		
         public int AssignSmellsMaximizeHappyCustomers(out bool[] smells)
         {
+			smells = new bool[smellCount];
+			if (satisfactionLevel <= 0)
+				return _customerCount;
+
+			_success = false;
+			_maxCust = 0;
 			_satLevel = new int[_customerCount];
-			bestSmell = new bool[smellCount];
-            smells = new bool[smellCount];
-			backtrackingHelperDwa(0, -1, ref smells);
+			_bestSmell = new bool[smellCount];
+
+			prepareHelpArray();
+			backtrackingHelperSecond(0, -1, ref smells);
+
 			if (_success == false)
 			{
-				smells = bestSmell;
+				_bestSmell.CopyTo(smells, 0);
+				return _maxCust;
 			}
-            return _maxCust;
-        }
-		public void backtrackingHelperDwa(int iter, int last, ref bool[] smells)
+			return _customerCount;
+		}
+		public void backtrackingHelperSecond(int iter, int last, ref bool[] smells)
 		{
-			_zadowoleni = 0;
-			_success = true;
-			for (int i = 0; i < _customerCount; i++)
+			//WriteLine("Iter {0}", iter);
+			if (iter > smellCount)
 			{
-				if (_satLevel[i] < satisfactionLevel)
-				{
-					_success = false;
-				}
-				else
-				{
-					_zadowoleni++;
-				}
-			}
-			if (_zadowoleni > _maxCust)
-			{
-				Array.Copy(smells, bestSmell, smellCount);
-				_maxCust = _zadowoleni;
-			}
-
-			if (_success == true)
-			{
-				_maxCust = _customerCount;
-				Array.Copy(smells, bestSmell, smellCount);
 				return;
 			}
 
-			if (iter == smellCount)
+			int currentHappyCounter = 0;
+			//if (last != -1)
 			{
+				for (int i = 0; i < _customerCount; i++)
+				{
+					if (_satLevel[i] >= satisfactionLevel)
+						currentHappyCounter++;
+				}
+			}
+
+			if (currentHappyCounter == _customerCount)
+			{
+				_maxCust = currentHappyCounter;
+				_success = true;
 				return;
+			}
+			if(currentHappyCounter > _maxCust)
+			{
+				_maxCust = currentHappyCounter;
+				smells.CopyTo(_bestSmell, 0);
 			}
 
 			for (int i = last + 1; i < smellCount; i++)
 			{
-				if (smells[i] == true)
-					continue;
+				
 				if (smells[i] == false)
 				{
+					//WriteLine("Trying smell no {0}", i);
 					for (int j = 0; j < _customerCount; j++)
 					{
 						_satLevel[j] += customerPreferences[j][i];
 					}
 					smells[i] = true;
-					backtrackingHelperDwa(iter + 1, i, ref smells);
-					if (_success)
-						return;
-					if (_canFinish == false)
+					//WriteLine("Recurrence to {0}", i);
+					backtrackingHelperSecond(iter + 1, i, ref smells);
+					//WriteLine("Back from {0}", i);
+					if (_success == true)
 					{
-						_success = false;
 						return;
 					}
 					smells[i] = false;
@@ -207,8 +211,6 @@ namespace Lab07
 					}
 				}
 			}
-
-
 		}
 	}
 

@@ -366,7 +366,7 @@ namespace Lab07
 					new int[]{ -1, -2, 3, 4, 5, 6, 7, 8, 9 },
 					new int[]{ 1, 2, -3, -4, 5, 6, 7, 8, 9 }
 				};
-
+			/*
 			//Etap1 
 			TestCase[] tc =
 				{
@@ -404,7 +404,7 @@ namespace Lab07
 			}
 			Console.WriteLine("*\nEtap1, wydajność. Wynik: {0}, {1}p\n*", score2 == tc.Length, score2 == tc.Length ? 1 : 0);
 
-
+			*/
 			// Etap 2
 			TestCase2[] tc2 =
 				{
@@ -428,6 +428,7 @@ namespace Lab07
 			Console.WriteLine("*\nEtap2, poprawność. Start!\n*");
 			int score3 = 0;
 			for (int i = 0; i < tc2.Length - bigTests2; i++)
+			//for (int i = 1; i < 2; i++)
 			{
 				Console.Out.Write("Test {0}: ", i);
 				if (tc2[i].PerformTest(false, speedFactor, verbose, swallowExceptions))
@@ -445,8 +446,6 @@ namespace Lab07
 			}
 			Console.WriteLine("*\nEtap2, wydajność. Wynik: {0}, {1}p\n*", score4 == tc2.Length, score4 == tc2.Length ? 1 : 0);
 			
-
-
 		}
 	}
 }
