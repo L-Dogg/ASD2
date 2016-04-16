@@ -428,7 +428,6 @@ namespace Lab07
 			Console.WriteLine("*\nEtap2, poprawność. Start!\n*");
 			int score3 = 0;
 			for (int i = 0; i < tc2.Length - bigTests2; i++)
-			//for (int i = 1; i < 2; i++)
 			{
 				Console.Out.Write("Test {0}: ", i);
 				if (tc2[i].PerformTest(false, speedFactor, verbose, swallowExceptions))

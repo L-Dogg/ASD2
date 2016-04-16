@@ -165,25 +165,35 @@ namespace Lab07
 			}
 
 			int currentHappyCounter = 0;
-			//if (last != -1)
+			int potentialHappyCounter = 0;
+			if (last != -1)
 			{
 				for (int i = 0; i < _customerCount; i++)
 				{
 					if (_satLevel[i] >= satisfactionLevel)
 						currentHappyCounter++;
+					if (_satLevel[i] + _onesAvailable[i][last] >= satisfactionLevel)
+						potentialHappyCounter++;
 				}
 			}
 
 			if (currentHappyCounter == _customerCount)
 			{
+				//WriteLine("Calkowity sukces");
 				_maxCust = currentHappyCounter;
 				_success = true;
 				return;
 			}
 			if(currentHappyCounter > _maxCust)
 			{
+				//WriteLine("Nowy max");
 				_maxCust = currentHappyCounter;
 				smells.CopyTo(_bestSmell, 0);
+			}
+			if (last != -1 && potentialHappyCounter <= _maxCust)
+			{
+				//WriteLine("Odciecie");
+				return;
 			}
 
 			for (int i = last + 1; i < smellCount; i++)
