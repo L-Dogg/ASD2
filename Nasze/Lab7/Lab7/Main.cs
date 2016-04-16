@@ -444,6 +444,7 @@ namespace Lab07
 					score4++;
 			}
 			Console.WriteLine("*\nEtap2, wydajność. Wynik: {0}, {1}p\n*", score4 == tc2.Length, score4 == tc2.Length ? 1 : 0);
+			
 
 
 		}

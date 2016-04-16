@@ -10,7 +10,7 @@ namespace Lab07
         private readonly int smellCount;
         private readonly int[][] customerPreferences;
         private readonly int satisfactionLevel;
-		private readonly int _ileKlientow;
+		private readonly int _customerCount;
         /// <summary>
         ///   
         /// </summary>
@@ -30,7 +30,7 @@ namespace Lab07
             this.smellCount = smellCount;
             this.customerPreferences = customerPreferences;
             this.satisfactionLevel = satisfactionLevel;
-			_ileKlientow = customerPreferences.GetLength(0);
+			_customerCount = customerPreferences.GetLength(0);
 		}
 
 		/// <summary>
@@ -39,86 +39,91 @@ namespace Lab07
 		/// <returns><c>true</c>, jeśli przypisanie jest możliwe <c>false</c> w p.p.</returns>
 		/// <param name="smells">Wyjściowa tablica rozpylonych zapachów realizująca rozwiązanie, jeśli się da. null w p.p. </param>
 
-		private bool _sukces = true;
-		private int[] _poziomUsatysf;
-		private bool _canFinish = true;
-		private int[,] _pom;
+		private bool _success;
+		private int[] _satLevel;
+		private int[][] _onesAvailable;
+
+		private void prepareHelpArray()
+		{
+			_onesAvailable = new int[_customerCount][];
+
+			for (int i = 0; i < _customerCount; i++)
+			{
+				_onesAvailable[i] = new int[smellCount];
+				for (int j = smellCount - 2; j >= 0; j--)
+				{
+					_onesAvailable[i][j] = _onesAvailable[i][j + 1];
+					if (customerPreferences[i][j + 1] == 1)
+					{
+						_onesAvailable[i][j]++;
+					}
+				}
+			}
+		}
+
 		public Boolean AssignSmells(out bool[] smells)
         {
-			_canFinish = true;
-			_sukces = true;
-            smells = new bool[smellCount];
-			_poziomUsatysf = new int[_ileKlientow];
+			smells = new bool[smellCount];
+			if (satisfactionLevel <= 0)
+				return true;
 
+			_success = false;
+			_satLevel = new int[_customerCount];
+			prepareHelpArray();
 			backtrackingHelper(0, -1, ref smells);
 
-			if (_sukces == false)
+			if (_success == false)
 				smells = null;
-			return _sukces;
+			return _success;
         }
 
 		public void backtrackingHelper(int iter, int last, ref bool[] smells)
 		{
-			if(iter == smellCount)
+			if(iter > smellCount)
 			{
 				return;
 			}
 
-			for (int i = last+1; i < smellCount; i++)
+			int currentHappyCounter = 0;
+			if (last != -1)
 			{
-				if (smells[i] == true)
-					continue;
-				
-				if (smells[i] == false)
+				for (int i = 0; i < _customerCount; i++)
 				{
-					_sukces = true;
-					for (int j = 0; j < _ileKlientow; j++)
-					{
-						_poziomUsatysf[j] += customerPreferences[j][i];
-						if (_sukces)
-						{
-							if (_poziomUsatysf[j] < satisfactionLevel)
-							{
-								_sukces = false;
-								if (satisfactionLevel - _poziomUsatysf[j] > smellCount - iter)
-								{
-									_canFinish = false;
-									break;
-								}
-							}
-						}
-
-					}
-
-					if (_canFinish == false)
-					{
-						_sukces = false;
-						return;
-					}
-					
-					smells[i] = true;
-					if (_sukces)
+					if (_satLevel[i] >= satisfactionLevel)
+						currentHappyCounter++;
+					else if (satisfactionLevel - _satLevel[i] > _onesAvailable[i][last])
 					{
 						return;
-					}
-					backtrackingHelper(iter + 1, i, ref smells);
-
-					if (_sukces)
-						return;
-					if(_canFinish == false)
-					{
-						_sukces = false;
-						return;
-					}
-					smells[i] = false;
-					for (int j = 0; j < _ileKlientow; j++)
-					{
-						_poziomUsatysf[j] -= customerPreferences[j][i];
-					}
+					} 
 				}
 			}
 
-			
+			if(currentHappyCounter == _customerCount)
+			{
+				_success = true;
+				return;
+			}
+			for(int i = last + 1; i < smellCount; i++)
+			{
+				if(smells[i] == false)
+				{
+					for(int j = 0; j < _customerCount; j++)
+					{
+						_satLevel[j] += customerPreferences[j][i];
+					}
+					smells[i] = true;
+					backtrackingHelper(iter + 1, i, ref smells);
+					if(_success == true)
+					{
+						return;
+					}
+					smells[i] = false;
+					for (int j = 0; j < _customerCount; j++)
+					{
+						_satLevel[j] -= customerPreferences[j][i];
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -130,13 +135,14 @@ namespace Lab07
 		private int _maxCust = 0;
 		private bool[] bestSmell;
 		private int _zadowoleni = 0;
+		private bool _canFinish = true;
         public int AssignSmellsMaximizeHappyCustomers(out bool[] smells)
         {
-			_poziomUsatysf = new int[_ileKlientow];
+			_satLevel = new int[_customerCount];
 			bestSmell = new bool[smellCount];
             smells = new bool[smellCount];
 			backtrackingHelperDwa(0, -1, ref smells);
-			if (_sukces == false)
+			if (_success == false)
 			{
 				smells = bestSmell;
 			}
@@ -145,12 +151,12 @@ namespace Lab07
 		public void backtrackingHelperDwa(int iter, int last, ref bool[] smells)
 		{
 			_zadowoleni = 0;
-			_sukces = true;
-			for (int i = 0; i < _ileKlientow; i++)
+			_success = true;
+			for (int i = 0; i < _customerCount; i++)
 			{
-				if (_poziomUsatysf[i] < satisfactionLevel)
+				if (_satLevel[i] < satisfactionLevel)
 				{
-					_sukces = false;
+					_success = false;
 				}
 				else
 				{
@@ -163,9 +169,9 @@ namespace Lab07
 				_maxCust = _zadowoleni;
 			}
 
-			if (_sukces == true)
+			if (_success == true)
 			{
-				_maxCust = _ileKlientow;
+				_maxCust = _customerCount;
 				Array.Copy(smells, bestSmell, smellCount);
 				return;
 			}
@@ -181,23 +187,23 @@ namespace Lab07
 					continue;
 				if (smells[i] == false)
 				{
-					for (int j = 0; j < _ileKlientow; j++)
+					for (int j = 0; j < _customerCount; j++)
 					{
-						_poziomUsatysf[j] += customerPreferences[j][i];
+						_satLevel[j] += customerPreferences[j][i];
 					}
 					smells[i] = true;
 					backtrackingHelperDwa(iter + 1, i, ref smells);
-					if (_sukces)
+					if (_success)
 						return;
 					if (_canFinish == false)
 					{
-						_sukces = false;
+						_success = false;
 						return;
 					}
 					smells[i] = false;
-					for (int j = 0; j < _ileKlientow; j++)
+					for (int j = 0; j < _customerCount; j++)
 					{
-						_poziomUsatysf[j] -= customerPreferences[j][i];
+						_satLevel[j] -= customerPreferences[j][i];
 					}
 				}
 			}
