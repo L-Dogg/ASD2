@@ -42,7 +42,7 @@ namespace Lab07
 		private bool _sukces = true;
 		private int[] _poziomUsatysf;
 		private bool _canFinish = true;
-
+		private int[,] _pom;
 		public Boolean AssignSmells(out bool[] smells)
         {
 			_canFinish = true;
@@ -175,11 +175,11 @@ namespace Lab07
 				return;
 			}
 
-			for (int i = 0; i < smellCount; i++)
+			for (int i = last + 1; i < smellCount; i++)
 			{
 				if (smells[i] == true)
 					continue;
-				if (smells[i] == false && i > last)
+				if (smells[i] == false)
 				{
 					for (int j = 0; j < _ileKlientow; j++)
 					{
