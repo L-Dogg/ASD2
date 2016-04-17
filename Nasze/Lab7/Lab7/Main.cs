@@ -366,7 +366,7 @@ namespace Lab07
 					new int[]{ -1, -2, 3, 4, 5, 6, 7, 8, 9 },
 					new int[]{ 1, 2, -3, -4, 5, 6, 7, 8, 9 }
 				};
-			/*
+			
 			//Etap1 
 			TestCase[] tc =
 				{
@@ -404,7 +404,7 @@ namespace Lab07
 			}
 			Console.WriteLine("*\nEtap1, wydajność. Wynik: {0}, {1}p\n*", score2 == tc.Length, score2 == tc.Length ? 1 : 0);
 
-			*/
+			
 			// Etap 2
 			TestCase2[] tc2 =
 				{

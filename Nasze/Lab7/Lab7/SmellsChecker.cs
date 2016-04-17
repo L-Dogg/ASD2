@@ -158,7 +158,6 @@ namespace Lab07
 		}
 		public void backtrackingHelperSecond(int iter, int last, ref bool[] smells)
 		{
-			//WriteLine("Iter {0}", iter);
 			if (iter > smellCount)
 			{
 				return;
@@ -179,20 +178,17 @@ namespace Lab07
 
 			if (currentHappyCounter == _customerCount)
 			{
-				//WriteLine("Calkowity sukces");
 				_maxCust = currentHappyCounter;
 				_success = true;
 				return;
 			}
 			if(currentHappyCounter > _maxCust)
 			{
-				//WriteLine("Nowy max");
 				_maxCust = currentHappyCounter;
 				smells.CopyTo(_bestSmell, 0);
 			}
 			if (last != -1 && potentialHappyCounter <= _maxCust)
 			{
-				//WriteLine("Odciecie");
 				return;
 			}
 
@@ -201,15 +197,12 @@ namespace Lab07
 				
 				if (smells[i] == false)
 				{
-					//WriteLine("Trying smell no {0}", i);
 					for (int j = 0; j < _customerCount; j++)
 					{
 						_satLevel[j] += customerPreferences[j][i];
 					}
 					smells[i] = true;
-					//WriteLine("Recurrence to {0}", i);
 					backtrackingHelperSecond(iter + 1, i, ref smells);
-					//WriteLine("Back from {0}", i);
 					if (_success == true)
 					{
 						return;
