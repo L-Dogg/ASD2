@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;  // potrzebne dla metody First rozszerzającej interfejs IEnumerable
 
 namespace ASD.Graphs
@@ -10,105 +11,108 @@ namespace ASD.Graphs
 	public static class Lab08Extender
     {
 
-    /// <summary>
-    /// Znajduje rozwiązanie przybliżone problemu komiwojażera algorytmem zachłannym "kruskalopodobnym"
-    /// </summary>
-    /// <param name="g">Badany graf</param>
-    /// <param name="cycle">Znaleziony cykl (parametr wyjściowy)</param>
-    /// <returns>Długość znalezionego cyklu (suma wag krawędzi)</returns>
-    /// <remarks>
-    /// Elementy (krawędzie) umieszczone są w tablicy <i>cycle</i> w kolejności swojego następstwa w znalezionym cyklu Hamiltona.<br/>
-    /// <br/>
-    /// Jeśli algorytm "kruskalopodobny" nie znajdzie w badanym grafie cyklu Hamiltona
-    /// (co oczywiście nie znaczy, że taki cykl nie istnieje) to metoda zwraca <b>null</b>,
-    /// parametr wyjściowy <i>cycle</i> również ma wówczas wartość <b>null</b>.<br/>
-    /// <br/>
-    /// Metodę można stosować dla grafów skierowanych i nieskierowanych.<br/>
-    /// <br/>
-    /// Metodę można stosować dla dla grafów z dowolnymi (również ujemnymi) wagami krawędzi.
-    /// </remarks>
-    public static int? TSP_Kruskal(this Graph g, out Edge[] cycle)
-        {
-        // ToDo - algorytm "kruskalopodobny"
-			cycle=null;
-			
-			return g.Lab03Kruskal(out cycle);
-        }  // TSP_Kruskal
-
-		public static int? Lab03Kruskal(this Graph g, out Edge[] cycle)
+		/// <summary>
+		/// Znajduje rozwiązanie przybliżone problemu komiwojażera algorytmem zachłannym "kruskalopodobnym"
+		/// </summary>
+		/// <param name="g">Badany graf</param>
+		/// <param name="cycle">Znaleziony cykl (parametr wyjściowy)</param>
+		/// <returns>Długość znalezionego cyklu (suma wag krawędzi)</returns>
+		/// <remarks>
+		/// Elementy (krawędzie) umieszczone są w tablicy <i>cycle</i> w kolejności swojego następstwa w znalezionym cyklu Hamiltona.<br/>
+		/// <br/>
+		/// Jeśli algorytm "kruskalopodobny" nie znajdzie w badanym grafie cyklu Hamiltona
+		/// (co oczywiście nie znaczy, że taki cykl nie istnieje) to metoda zwraca <b>null</b>,
+		/// parametr wyjściowy <i>cycle</i> również ma wówczas wartość <b>null</b>.<br/>
+		/// <br/>
+		/// Metodę można stosować dla grafów skierowanych i nieskierowanych.<br/>
+		/// <br/>
+		/// Metodę można stosować dla dla grafów z dowolnymi (również ujemnymi) wagami krawędzi.
+		/// </remarks>
+		public static int? TSP_Kruskal(this Graph g, out Edge[] cycle)
 		{
-			int mstw = 0;
-			cycle = null;
+			var tree = GetTree(g);
+			CloseCycle(g, ref tree);
+			return ConstructCycle(tree, out cycle);
+		}  // TSP_Kruskal
 
-			// Dodanie krawedzi do kolejki:
-			Graph ret = g.IsolatedVerticesGraph();
-			EdgesMinPriorityQueue pq = new EdgesMinPriorityQueue();
+		private static Graph GetTree(Graph g)
+		{
+			Graph helper = g.IsolatedVerticesGraph(true, g.VerticesCount);
+			var queue = new EdgesMinPriorityQueue();
 			for (int i = 0; i < g.VerticesCount; i++)
-			{
-				foreach (Edge e in g.OutEdges(i))
+				foreach (var e in g.OutEdges(i))
 				{
-					if (e.To < i && g.Directed == false)
-					{
-						pq.Put(e);
-					}
+					helper.AddEdge(e);
+					queue.Put(e);
 				}
-			}
 
-			UnionFind vs = new UnionFind(g.VerticesCount);
-			int vsCount = g.VerticesCount;
-			Edge ed;
-			int s1, s2;
-			
-			while (pq.Count > 0 && vsCount > 0)
+			Graph tree = g.IsolatedVerticesGraph(true, g.VerticesCount);
+			UnionFind uf = new UnionFind(g.VerticesCount);
+			while (tree.EdgesCount != tree.VerticesCount - 1)
 			{
-				ed = pq.Get();
-				s1 = vs.Find(ed.From);
-				s2 = vs.Find(ed.To);
-				if (s1 != s2 && ret.OutDegree(ed.To) < 2 && ret.OutDegree(ed.From) < 2)
+				if (queue.Empty)
+					return null;
+				Edge e = queue.Get();
+				if (uf.Find(e.To) != uf.Find(e.From) &&
+					tree.OutDegree(e.From) < 1 &&
+					tree.InDegree(e.To) < 1)
 				{
-					vsCount--;
-					vs.Union(s1, s2);
-					ret.AddEdge(ed);
-					mstw += ed.Weight;
-					//Console.WriteLine("Adding Edge {0}", ed.ToString());
+					tree.AddEdge(e);
+					uf.Union(e.From, e.To);
 				}
 			}
-			int to = -1, from = -1;
-			for(int i = 0; i < ret.VerticesCount; i++)
-			{
-				if((ret.OutDegree(i) != 2 && g.Directed == false) || (ret.InDegree(i) + ret.OutDegree(i) != 2 && g.Directed == true))
-				{
-					if (from == -1)
-						from = i;
-					else if (to == -1)
-						to = i;
-				}
-			}
-			if(g.GetEdgeWeight(from, to).HasValue)
-			{
+			return tree;
+		}
 
-				ed = new Edge(from, to, g.GetEdgeWeight(from, to).Value);
-				ret.AddEdge(ed);
-				//Console.WriteLine("Adding Edge {0}", ed.ToString());
-			}
-			int prev = 0;
-			int cur = ret.OutEdges(prev).First().To;
-			cycle = new Edge[g.VerticesCount];
-			cycle[0] = ret.OutEdges(prev).First();
-			for (int i = 1; i < ret.VerticesCount; i++)
+		private static void CloseCycle(Graph g, ref Graph tree)
+		{
+			if (tree == null)
+				return;
+			int first = -1, last = -1;
+			for (int i = 0; i < tree.VerticesCount; i++)
 			{
-				foreach(Edge e in ret.OutEdges(cur))
-				{
-					if(e.To != prev)
+				if (tree.InDegree(i) == 0)
+					first = i;
+				if (tree.OutDegree(i) == 0)
+					last = i;
+			}
+			if (first == -1 || last == -1)
+			{
+				tree = null;
+				return;
+			}
+			int? weight = g.GetEdgeWeight(last, first);
+			if (weight.HasValue)
+				tree.AddEdge(last, first, weight.Value);
+			else
+				tree = null;
+		}
+
+		private static int? ConstructCycle(Graph g, out Edge[] edges)
+		{
+			if (g == null)
+			{
+				edges = null;
+				return null;
+			}
+			List<Edge> cycle = new List<Edge>();
+			bool[] visited = new bool[g.VerticesCount];
+			int last = 0;
+			int weight = 0;
+			while (cycle.Count != g.EdgesCount)
+			{
+				foreach (Edge e in g.OutEdges(last))
+					if (!visited[e.To])
 					{
-						prev = cur;
-						cur = e.To;
-						cycle[i] = e;
+						cycle.Add(e);
+						weight += e.Weight;
+						visited[e.To] = true;
+						last = e.To;
 						break;
 					}
-				}
 			}
-			return mstw;
+			edges = cycle.ToArray();
+			return weight;
 		}
 
 		/// <summary>
@@ -149,7 +153,6 @@ namespace ASD.Graphs
 			int? sum = buildCycle(g, out cycle);
 			return sum;
 		}  // TSP_TreeBased
-
 
 		public static int? buildCycle(Graph g, out Edge[] cycle)
 		{
