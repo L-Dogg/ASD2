@@ -167,7 +167,7 @@ namespace ASD.Graphs
 				verticesOrder[orderCounter++] = i;
 				return true;
 			};
-
+			
 			tree.DFSearchFrom(0, preVisit, null);
 
 			cycle = new Edge[g.VerticesCount];
