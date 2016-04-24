@@ -27,41 +27,22 @@ namespace MyGreedyFish
 			{
 				int maxPenguin = -1;
 				int maxScore = 0;
-				int maxDir = -1;
-				int maxLen = int.MaxValue;
 				Point bestPoint = new Point(-1,-1);
 
 				for(int i = 0; i < board.penguins.Count; i++)
 				{
 					for (int dir = 0; dir < 6; dir++)
 					{
-						int len = 0;
 						Point dirPoint = board.GetNeighbour(board.penguins[i].x, board.penguins[i].y, dir);
 						while(dirPoint.IsValid() && !board.IsPenguinAtField(dirPoint.x, dirPoint.y) && board.grid[dirPoint.x, dirPoint.y] != 0)
 						{
-							len++;
 							if(board.grid[dirPoint.x, dirPoint.y] > maxScore)
 							{
 								maxPenguin = i;
 								maxScore = board.grid[dirPoint.x, dirPoint.y];
-								maxDir = dir;
-								maxLen = len;
 								bestPoint = dirPoint;
                             }
-							else if (board.grid[dirPoint.x, dirPoint.y] == maxScore)
-							{
-								if (i > maxPenguin || dir > maxDir || len > maxLen)
-								{
-									dirPoint = board.GetNeighbour(dirPoint.x, dirPoint.y, dir);
-									continue;
-								}
-
-								maxPenguin = i;
-								maxScore = board.grid[dirPoint.x, dirPoint.y];
-								maxDir = dir;
-								maxLen = len;
-								bestPoint = dirPoint;
-							}
+							
 							dirPoint = board.GetNeighbour(dirPoint.x, dirPoint.y, dir);
 						}
 					}
@@ -99,7 +80,6 @@ namespace MyGreedyFish
 			{
 				int maxPenguin = -1;
 				int maxScore = 0;
-				int maxDir = -1;
 				Point bestPoint = new Point(-1, -1);
 
 				for (int i = 0; i < board.penguins.Count; i++)
@@ -116,20 +96,6 @@ namespace MyGreedyFish
 								{
 									maxPenguin = i;
 									maxScore = board.grid[dirPoint.x, dirPoint.y];
-									maxDir = dir;
-									bestPoint = dirPoint;
-								}
-								else if (board.grid[dirPoint.x, dirPoint.y] == maxScore)
-								{
-									if (i > maxPenguin || dir > maxDir)
-									{
-										dirPoint = board.GetNeighbour(dirPoint.x, dirPoint.y, dir);
-										continue;
-									}
-
-									maxPenguin = i;
-									maxScore = board.grid[dirPoint.x, dirPoint.y];
-									maxDir = dir;
 									bestPoint = dirPoint;
 								}
 							}
