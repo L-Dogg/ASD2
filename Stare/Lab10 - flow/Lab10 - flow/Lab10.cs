@@ -165,7 +165,7 @@ public static class FlowGraphExtender
 
 			for(int i = 0; i < vc; i++)
 			{
-				if (i != s || i != t)
+				if (i != s && i != t)
 					helpNetwork.AddEdge(i + vc, i, capacity[i]);
 				foreach(Edge e in network.OutEdges(i))
 				{
@@ -177,7 +177,8 @@ public static class FlowGraphExtender
 			}
 
 			Graph flow;
-			int flowValue = helpNetwork.FordFulkersonMaxFlow(s, t, out flow);
+			//int flowValue = helpNetwork.FordFulkersonMaxFlow(s, t, out flow);
+			int flowValue = helpNetwork.PushRelabelMaxFlow(s, t, out flow);
 
 			Graph realFlow = network.IsolatedVerticesGraph(true, vc);
 			for(int i = 0; i < vc; i++)
