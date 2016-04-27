@@ -1,4 +1,6 @@
 using ASD.Graphs;
+using System;
+using System.Linq;
 
 namespace ASD2
 {
@@ -32,67 +34,165 @@ public static class FlowGraphExtender
 			//
 			// TODO (2 pkt.)
 			//
-			matching = null;
-			return -1;
+			int[] vertices;
+			if (!g.Lab03IsBipartite(out vertices))
+				throw new ArgumentException();
+
+			Graph flowGraph = g.IsolatedVerticesGraph(true, g.VerticesCount + 2);
+			int s = g.VerticesCount;
+			int t = g.VerticesCount + 1;
+			for (int i = 0; i < g.VerticesCount; i++)
+			{
+				foreach(var edge in g.OutEdges(i))
+				{
+					if(vertices[i] == 1 && vertices[edge.To] == 2)
+						flowGraph.AddEdge(edge.From, edge.To);
+				}
+				if (vertices[i] == 1)
+					flowGraph.AddEdge(s, i);
+				else
+					flowGraph.AddEdge(i, t);
+			}
+			var ge = new GraphExport();
+			//ge.Export(g);
+			//ge.Export(flowGraph);
+
+			Graph flow;
+			flowGraph.FordFulkersonMaxFlow(s, t, out flow);
+
+			//ge.Export(flow);
+
+			//Jeśli po danej krawędzi nie płynie żaden przepływ, to nadal jest ona w wynikowym grafie flow (oczywiście z wagą 0).
+			matching = g.IsolatedVerticesGraph(false, g.VerticesCount);
+			for(int i = 0; i < g.VerticesCount; i++)				// źródło i ujście pomijamy
+			{
+				foreach (Edge e in flow.OutEdges(i))
+					if (e.To == s || e.To == t || e.Weight == 0)    // źródło i ujście pomijamy 
+						continue;
+					else
+						matching.AddEdge(e.From, e.To);
+			}
+			//ge.Export(matching);
+			return matching.EdgesCount;
         }
+		public static bool Lab03IsBipartite(this Graph g, out int[] ver)
+		{
+			if (g.Directed == true)
+				throw new ArgumentException();
 
-    /// <summary>
-    /// Znajduje przepływ w sieci N z ograniczonymi przepustowościami wierzchołków (c(v)).
-    /// Do ograniczeń wynikających ze klasycznego problemu maksymalnego przepływu
-    /// w sieci dokładamy dodatkowe:
-    /// dla każdego wierzchołka v, niebędącego źródłem lub ujściem przepływ przez
-    /// dany wierzchołek nie może przekraczać jego przepustowości.
-    /// Przepływ taki możemy znaleźć konstruując pomocniczą sieć N':
-    /// V(N') = { v_in, v_out dla każdego v należącego do V(N) \ {s,t} } u {s,t}
-    /// Dla każdego v należącego do V(N) \ {s,t} wierzchołki v_in i v_out łączymy krawędzią
-    /// o przepustowości c(v). Każda krawędź (u,v) w E(N) jest reprezentowana przez krawędź
-    /// (u_out, v_in) w N'. (przyjmujemy, że w N' s=s_in=s_out i t=t_in=t_out) - przepustowości pozostają bez zmian.
-    /// Maksymalny przepływ w sieci N' odpowiada maksymalnemu przepływowi z ograniczeniami w sieci N.
-    /// 
-    /// </summary>
-    /// <param name="network">sieć wejściowa</param>
-    /// <param name="s">źródło sieci</param>
-    /// <param name="t">ujście sieci</param>
-    /// <param name="capacity">przepustowości wierzchołków, przepustowości źródła i ujścia to int.MaxValue</param>
-    /// <param name="flowGraph">Znaleziony graf przepływu w sieci wejściowej</param>
-    /// <returns>Wartość maksymalnego przepływu</returns>
-    /// <remarks>
-    /// Wskazówka: Można przyjąć, że przepustowości źródła i ujścia są nieskończone
-    /// i traktować je jak wszystkie inne wierzchołki.
-    /// </remarks>
-    public static int ConstrainedMaxFlow(this Graph network, int s, int t, int[] capacity, out Graph flowGraph)
+			int[] tmp = new int[g.VerticesCount];
+
+			// Graf zlozony tylko z wierzcholkow izolowanych:
+			if (g.EdgesCount == 0)
+			{
+				ver = new int[g.VerticesCount];
+				for (int i = 0; i < g.VerticesCount; i++)
+					ver[i] = 1;
+				return true;
+			}
+
+			// Predykat dla wierzcholka izolowanego:
+			Predicate<int> predVert = delegate (int i)
+			{
+				if (g.OutDegree(i) == 0)
+					tmp[i] = 1;
+				return true;
+			};
+
+			// Predykat do kolorowania krawedzi:
+			Predicate<Edge> predEdge = delegate (Edge e)
+			{
+				if (tmp[e.From] == 0)
+					tmp[e.From] = 1;
+				if (tmp[e.From] == tmp[e.To])
+					return false;
+
+				if (tmp[e.From] == 1)
+					tmp[e.To] = 2;
+				else
+					tmp[e.To] = 1;
+
+				return true;
+			};
+
+			// Wszystkie wierzcholki nieodwiedzone:
+			for (int i = 0; i < g.VerticesCount; i++)
+			{
+				tmp[i] = 0;
+			}
+
+			int cc;
+			if (!g.GeneralSearchAll<EdgesQueue>(predVert, predEdge, out cc, null))
+			{
+				ver = null;
+				return false;
+			}
+			ver = tmp;
+
+			return true;
+		}
+		/// <summary>
+		/// Znajduje przepływ w sieci N z ograniczonymi przepustowościami wierzchołków (c(v)).
+		/// Do ograniczeń wynikających ze klasycznego problemu maksymalnego przepływu
+		/// w sieci dokładamy dodatkowe:
+		/// dla każdego wierzchołka v, niebędącego źródłem lub ujściem przepływ przez
+		/// dany wierzchołek nie może przekraczać jego przepustowości.
+		/// Przepływ taki możemy znaleźć konstruując pomocniczą sieć N':
+		/// V(N') = { v_in, v_out dla każdego v należącego do V(N) \ {s,t} } u {s,t}
+		/// Dla każdego v należącego do V(N) \ {s,t} wierzchołki v_in i v_out łączymy krawędzią
+		/// o przepustowości c(v). Każda krawędź (u,v) w E(N) jest reprezentowana przez krawędź
+		/// (u_out, v_in) w N'. (przyjmujemy, że w N' s=s_in=s_out i t=t_in=t_out) - przepustowości pozostają bez zmian.
+		/// Maksymalny przepływ w sieci N' odpowiada maksymalnemu przepływowi z ograniczeniami w sieci N.
+		/// 
+		/// </summary>
+		/// <param name="network">sieć wejściowa</param>
+		/// <param name="s">źródło sieci</param>
+		/// <param name="t">ujście sieci</param>
+		/// <param name="capacity">przepustowości wierzchołków, przepustowości źródła i ujścia to int.MaxValue</param>
+		/// <param name="flowGraph">Znaleziony graf przepływu w sieci wejściowej</param>
+		/// <returns>Wartość maksymalnego przepływu</returns>
+		/// <remarks>
+		/// Wskazówka: Można przyjąć, że przepustowości źródła i ujścia są nieskończone
+		/// i traktować je jak wszystkie inne wierzchołki.
+		/// </remarks>
+		public static int ConstrainedMaxFlow(this Graph network, int s, int t, int[] capacity, out Graph flowGraph)
         {
-        //
-        // TODO (1 pkt.)
-        //
-            Graph net = new AdjacencyMatrixGraph(true, network.VerticesCount * 2);
-            for (int v = 0; v < network.VerticesCount; ++v)
-            {
-                if (v != s && v != t)
-                    net.AddEdge(v + network.VerticesCount, v, capacity[v]);
-                foreach (Edge e in network.OutEdges(v))
-                {
-                    if (e.To != t)
-                        net.AddEdge(v, e.To + network.VerticesCount, e.Weight);
-                    else
-                        net.AddEdge(e);
+			//
+			// TODO (1 pkt.)
+			//
+			int vc = network.VerticesCount;
+			Graph helpNetwork = network.IsolatedVerticesGraph(true, vc * 2);		
 
-                }
-            }
-            int flow = MaxFlowGraphExtender.PushRelabelMaxFlow(net, s, t, out flowGraph);
-            Graph fll = new AdjacencyMatrixGraph(true, network.VerticesCount);
-            for (int v = 0; v < fll.VerticesCount; ++v)
-            {
-                foreach (Edge e in flowGraph.OutEdges(v))
-                {
-                    if (e.To != t)
-                        fll.AddEdge(v, e.To - network.VerticesCount, e.Weight);
-                    else
-                        fll.AddEdge(e);
-                }
-            }
-            flowGraph = fll;
-            return flow;
+			for(int i = 0; i < vc; i++)
+			{
+				if (i != s || i != t)
+					helpNetwork.AddEdge(i + vc, i, capacity[i]);
+				foreach(Edge e in network.OutEdges(i))
+				{
+					if (e.To != t)
+						helpNetwork.AddEdge(i, e.To + vc, e.Weight);
+					else
+						helpNetwork.AddEdge(e);
+				}
+			}
+
+			Graph flow;
+			int flowValue = helpNetwork.FordFulkersonMaxFlow(s, t, out flow);
+
+			Graph realFlow = network.IsolatedVerticesGraph(true, vc);
+			for(int i = 0; i < vc; i++)
+			{
+				foreach(Edge e in flow.OutEdges(i))
+				{
+					if (e.To != t)
+						realFlow.AddEdge(i, e.To - vc, e.Weight);
+					else
+						realFlow.AddEdge(e);
+				}
+			}
+			flowGraph = realFlow;
+
+			return flowValue;			
         }
 
     /// <summary>
@@ -116,11 +216,21 @@ public static class FlowGraphExtender
     /// </remarks>
     public static int FindMaxIndependentPaths(this Graph g, int start, int finish, out Graph paths)
         {
-        //
-        // TODO (1 pkt.)
-        //
-        paths = null;
-        return -1;
+			//
+			// TODO (1 pkt.)
+			//
+			Graph helper = g.IsolatedVerticesGraph(true, g.VerticesCount);
+			
+			for(int i = 0; i < g.VerticesCount; i++)
+			{
+				foreach (Edge e in g.OutEdges(i))
+					helper.AddEdge(e.From, e.To);
+			}
+			int[] capacity = Enumerable.Repeat(1, g.VerticesCount).ToArray();
+			Graph ret;
+			int count = helper.ConstrainedMaxFlow(start, finish, capacity, out ret);
+			paths = ret;
+			return count;
         }
 
     }
