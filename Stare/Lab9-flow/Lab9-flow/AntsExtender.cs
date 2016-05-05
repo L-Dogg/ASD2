@@ -1,5 +1,5 @@
 using System;
-using ASD.Graph;
+using ASD.Graphs;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,10 +17,40 @@ namespace lab9
         /// <param name="flowValue">wartoœæ przep³ywu przed rozbudow¹ mrowiska</param>
         /// <returns>krawêdŸ o wadze 1, któr¹ nale¿y dodaæ lub poszerzyæ (zwracamy te¿ krawêdŸ
         /// o wadze 1)</returns>
-		public static Edge? ImprovementChecker (this IGraph baseGraph, int[] sources, int[] destinations, out int flowValue)
+		public static Edge? ImprovementChecker (this Graph baseGraph, int[] sources, int[] destinations, out int flowValue)
 		{
-        flowValue=0;
-        return null;
+			flowValue=0;
+			Graph flowGraph = baseGraph.IsolatedVerticesGraph(true, baseGraph.VerticesCount + 2);
+			int s = baseGraph.VerticesCount;
+			int t = baseGraph.VerticesCount + 1;
+			for(int i = 0; i < baseGraph.VerticesCount; i++)
+			{
+				foreach(Edge e in baseGraph.OutEdges(i))
+				{
+					flowGraph.AddEdge(e);
+				}
+
+				for(int j = 0; j < sources.Length; j++)
+				{
+					if(sources[j] == i)
+					{
+						flowGraph.AddEdge(s, i, int.MaxValue);
+					}
+				}
+
+				for (int j = 0; j < destinations.Length; j++)
+				{
+					if (destinations[j] == i)
+					{
+						flowGraph.AddEdge(i, t, int.MaxValue);
+					}
+				}
+			}
+
+			Graph flow;
+			flowValue = flowGraph.FordFulkersonMaxFlow(s, t, out flow);
+
+			return null;
 		}
 
 	}

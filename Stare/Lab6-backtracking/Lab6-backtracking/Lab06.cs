@@ -34,12 +34,9 @@ public static class CliqueGraphExtender
 			maxKlika = new List<int>();
 			for(int i = 0; i < g.VerticesCount; i++)
 			{
-				//WriteLine("Dodaje wierzcholek: {0}", i);
 				klika.Add(i);
-				//WriteLine("Rekure - rodzic");
 				Clique(0, g);
 				klika.Remove(i);
-				//WriteLine("Usuwa wierzcholek: {0}", i);
 			}
 			clique = maxKlika.ToArray();
 			return maxKlika.Count;
@@ -67,16 +64,12 @@ public static class CliqueGraphExtender
 					}
 					if (ok && (i > klika[klika.Count - 1]))
 					{
-						//WriteLine("Dodaje wierzcholek: {0}", i);
 						klika.Add(i);
 						if (klika.Count > maxKlika.Count)
 						{
-							//WriteLine("Nowy max");
 							maxKlika = new List<int>(klika);
 						}
-						//WriteLine("Rekure");
 						Clique(k + 1, g);
-						//WriteLine("Usuwa wierzcholek: {0}", i);
 						klika.Remove(i);
 					}
 				}
@@ -135,23 +128,59 @@ public static class CliqueGraphExtender
             used = new bool[g.VerticesCount];
             }
 
-        /// <summary>
-        /// Bada izomorfizm grafów metodą pełnego przeglądu (rekurencyjnie)
-        /// </summary>
-        /// <param name="vh">Aktualnie rozważany wierzchołek</param>
-        /// <param name="map">Mapowanie wierzchołków grafu h na wierzchołki grafu g</param>
-        /// <returns>Informacja czy znaleziono mapowanie definiujące izomotfizm</returns>
-        internal bool FindMapping(int vh, int[] map)
-            {
+			/// <summary>
+			/// Bada izomorfizm grafów metodą pełnego przeglądu (rekurencyjnie)
+			/// </summary>
+			/// <param name="vh">Aktualnie rozważany wierzchołek</param>
+			/// <param name="map">Mapowanie wierzchołków grafu h na wierzchołki grafu g</param>
+			/// <returns>Informacja czy znaleziono mapowanie definiujące izomotfizm</returns>
+			internal bool FindMapping(int vh, int[] map)
+			{
 
-            // Wskazówki
-            // 1) w sposób systematyczny sprawdzać wszystkie potencjalne mapowania
-            // 2) unikać wielokrotnego sprawdzania tego samego mapowania
-            // 3) zastosować algorytm z powrotami (backtracking)
-            // 4) do badania krawędzi pomiędzy wierzchołkami i oraz j użyć metody GetEdgeWeight(i,j)
+				// Wskazówki
+				// 1) w sposób systematyczny sprawdzać wszystkie potencjalne mapowania
+				// 2) unikać wielokrotnego sprawdzania tego samego mapowania
+				// 3) zastosować algorytm z powrotami (backtracking)
+				// 4) do badania krawędzi pomiędzy wierzchołkami i oraz j użyć metody GetEdgeWeight(i,j)
 
-            return false;
-            }
+				if (vh == g.VerticesCount)
+				{
+					bool ok = true;
+					for(int i = 0; i < g.VerticesCount; i++)
+					{
+						foreach(Edge e in g.OutEdges(i))
+						{
+							if (!h.GetEdgeWeight(map[e.From], map[e.To]).HasValue)
+								ok = false;
+						}
+					}
+					return ok;
+				}
+
+				for (int i = 0; i < g.VerticesCount; i++)
+				{
+					if (used[i] == false)
+					{
+						bool ok = true;
+						foreach (Edge e in g.OutEdges(i))
+							if (used[e.To] == true)
+								if (h.GetEdgeWeight(i, map[e.To]).HasValue == false)
+								{
+									ok = false;
+									break;
+								}
+						if(ok)
+						{
+							used[i] = true;
+							map[vh] = i;
+							if (FindMapping(vh++, map))
+								return true;
+							used[i] = false;
+						}
+					}
+				}
+				return false;
+			}
 
         }  // class IzomorpchismHelper
 

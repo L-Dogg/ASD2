@@ -1,12 +1,12 @@
 using System;
-using ASD.Graph;
+using ASD.Graphs;
 using System.Linq;
 
 namespace lab9
 {
     class Test
     {
-        public IGraph graph;
+        public Graph graph;
         public int[] ins;
         public int[] outs;
         public Edge[] solutions;
@@ -14,7 +14,7 @@ namespace lab9
         public int acceptableTime;
         public int flowValue;
 
-        public Test(IGraph graph, int[] ins, int[] outs, Edge[] solutions, int expectedTime, int acceptableTime, int flowValue)
+        public Test(Graph graph, int[] ins, int[] outs, Edge[] solutions, int expectedTime, int acceptableTime, int flowValue)
         {
             this.graph = graph;
             this.ins = ins;
@@ -30,7 +30,7 @@ namespace lab9
 	{
 		public static void Main (string[] args)
 		{
-			IGraph graph1 = new AdjacencyListsGraph<SimplyAdjacencyList> (true, 9);
+			Graph graph1 = new AdjacencyListsGraph<SimplyAdjacencyList> (true, 9);
 			int[] in1 = {0,1,2};
 			int[] out1 = {6,7,8};
 			for(int i=0;i<3;i++){
@@ -38,7 +38,7 @@ namespace lab9
 				graph1.AddEdge(i+3,i+6,1);
 			}
 
-			IGraph graph2 = new AdjacencyListsGraph<SimplyAdjacencyList> (true, 12);
+			Graph graph2 = new AdjacencyListsGraph<SimplyAdjacencyList> (true, 12);
 			int[] in2 = {0,1,2};
 			int[] out2 = {9,10,11};
 			for(int i=0;i<3;i++){
@@ -47,7 +47,7 @@ namespace lab9
 				graph2.AddEdge(i+6,i+9,1);
 			}
 
-            IGraph graph3 = new AdjacencyListsGraph<SimplyAdjacencyList>(true, 12);
+            Graph graph3 = new AdjacencyListsGraph<SimplyAdjacencyList>(true, 12);
             int[] in3 = { 0, 1, 2 };
             int[] out3 = { 9, 10, 11 };
             for (int i = 0; i < 3; i++)
@@ -57,7 +57,7 @@ namespace lab9
                 graph3.AddEdge(i + 6, i + 9, 1);
             }
 
-            IGraph graph4 = new AdjacencyMatrixGraph(true, 12);
+            Graph graph4 = new AdjacencyMatrixGraph(true, 12);
             int[] in4 = { 0, 1 };
             int[] out4 = { 11 };
             for (int i = 2; i < 11; i++)
@@ -71,7 +71,7 @@ namespace lab9
             graph4.AddEdge(0, 2, 1);
             graph4.AddEdge(1, 2, 1);
 
-            IGraph graph5 = new AdjacencyMatrixGraph(true, 12);
+            Graph graph5 = new AdjacencyMatrixGraph(true, 12);
             int[] in5 = { 0, 1 };
             int[] out5 = { 11 };
             for (int i = 2; i < 11; i++)
@@ -85,7 +85,7 @@ namespace lab9
             graph5.AddEdge(0, 2, 2);
             graph5.AddEdge(1, 2, 1);
 
-            IGraph graph6 = new AdjacencyMatrixGraph(true, 12);
+            Graph graph6 = new AdjacencyMatrixGraph(true, 12);
             int[] in6 = { 0, 1 };
             int[] out6 = { 11 };
             for (int i = 3; i < 11; i++)
@@ -100,7 +100,7 @@ namespace lab9
             graph6.AddEdge(1, 2, 1);
             graph6.AddEdge(2, 3, 2);
 
-            IGraph graph7 = new AdjacencyListsGraph<SimplyAdjacencyList>(true, 40000);
+            Graph graph7 = new AdjacencyListsGraph<SimplyAdjacencyList>(true, 40000);
             int[] in7 = { 0 };
             int[] out7 = { 39999 };
             for (int i = 3; i < 40000; i++)
@@ -138,7 +138,7 @@ namespace lab9
         private static bool PerformTest(int id, Test t)
         {
             int fv;
-            long start, end;
+            ulong start, end;
             start = Graph.Counter;
             Console.Out.Write("Test {0}",id);
             Edge? result = t.graph.ImprovementChecker(t.ins, t.outs, out fv);

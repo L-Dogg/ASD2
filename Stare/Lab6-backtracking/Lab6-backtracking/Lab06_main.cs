@@ -20,7 +20,7 @@ class Lab06
         PrepareTests();
 
         Console.WriteLine();
-        Console.WriteLine("Clique Tests");
+       /* Console.WriteLine("Clique Tests");
         for ( int i=0 ; i<cliq_test.Length ; ++i )
             {
             try
@@ -40,10 +40,10 @@ class Lab06
                 Console.WriteLine("Test {0}:  {1} ", i+1, e.Message);
                 }
             }
-		
+		*/
         Console.WriteLine();
         Console.WriteLine("Izomorpism Tests");
-		/*
+		
         for ( int i=0 ; i<izo_test.GetLength(0) ; ++i )
             {
             try
@@ -60,7 +60,7 @@ class Lab06
                 }
             }
 
-        Console.WriteLine();*/
+        Console.WriteLine();
 	}
 
 	public static void PrepareTests()
