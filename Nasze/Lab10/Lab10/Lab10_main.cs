@@ -93,7 +93,8 @@ class Lab10
             Console.Write($"Test {i+1}:  ");
             g = izo_test2[i,0].Clone();
             h = izo_test2[i,1].Clone();
-            thr.Start();
+			//DateTime dt = DateTime.Now;
+			thr.Start();
             if ( !thr.Join((int)(speedFactor*4000)) )  // powinno wystarczyc 2000 
                 {
                 thr.Abort();
@@ -101,7 +102,9 @@ class Lab10
                 }
             else
                 {
-                res = ( izo ? izo_res2[i] && map!=null && izo_test2[i,0].IsIsomorphicParallel(izo_test2[i,1],map)==izo_res2[i] : !izo_res2[i] && map==null )
+
+				//Console.WriteLine($"Time {(DateTime.Now - dt).Milliseconds} ms");
+				res = ( izo ? izo_res2[i] && map!=null && izo_test2[i,0].IsIsomorphicParallel(izo_test2[i,1],map)==izo_res2[i] : !izo_res2[i] && map==null )
                         && izo_test2[i,0].IsEqualParallel(g) && izo_test2[i,1].IsEqualParallel(h) ;
                 Console.WriteLine("{0}", res ?  "Passed" : "Fail" );
                 }

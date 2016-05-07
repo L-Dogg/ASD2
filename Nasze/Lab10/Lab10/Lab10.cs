@@ -121,22 +121,15 @@ public static class Lab10GraphExtender
 			if(used[i] == false && g.OutDegree(i) == h.OutDegree(vh))
 			{
 				bool ok = true;
-				foreach (Edge e in h.OutEdges(vh))
+				for(int k = 0; k < vh; k++)
 				{
-					if (hUsed[e.To] == true)
+					if (hUsed[k] == true)
 					{
-						if (g.GetEdgeWeight(i, map[e.To]).HasValue == false || h.GetEdgeWeight(vh, e.To).Value != g.GetEdgeWeight(i, map[e.To]).Value)
+						if (h.GetEdgeWeight(vh, k) != g.GetEdgeWeight(i, map[k]) || h.GetEdgeWeight(k, vh) != g.GetEdgeWeight(map[k], i))
 						{
 							ok = false;
 							break;
 						}
-						if (g.Directed)
-							if (h.GetEdgeWeight(e.To, vh).HasValue)
-								if (!g.GetEdgeWeight(map[e.To], i).HasValue || h.GetEdgeWeight(e.To, vh).Value != g.GetEdgeWeight(map[e.To], i).Value)
-								{
-									ok = false;
-									break;
-								}
 					}
                 }
 				if(ok)
