@@ -1,6 +1,8 @@
 ﻿
 using System.Collections.Generic;
 using ASD.Graphs;
+using System;
+using System.Linq;
 
 /// <summary>
 /// Klasa rozszerzająca klasę Graph o rozwiązania problemów największej kliki i izomorfizmu grafów metodą pełnego przeglądu (backtracking)
@@ -21,59 +23,61 @@ public static class Lab10GraphExtender
 	private static int n;
 	private static List<int> klika;
 	private static List<int> maxKlika;
-	private static bool[] vertices;
+	private static bool[] used;
 	public static int MaxClique(this Graph g, out int[] clique)
 	{
 		n = g.VerticesCount;
+		// Graf pełny
+		if((g.EdgesCount == (n-1) * n / 2 && !g.Directed) || (g.EdgesCount == (n-1)*n && g.Directed))
+		{
+			clique = Enumerable.Range(0, n).ToArray();
+			return n;
+		}
+
 		klika = new List<int>();
 		maxKlika = new List<int>();
-		vertices = new bool[g.VerticesCount];
-
+		used = new bool[n];
 		for(int i = 0; i < g.VerticesCount; i++)
 		{
 			klika.Add(i);
-			//vertices[i] = true;
-			Clique(0, g);
+			used[i] = true;
+			foreach (Edge e in g.OutEdges(i))
+			{
+				if(e.To > i)
+					Clique(e.To, g);
+			}
+			used[i] = false;
 			klika.Remove(i);
-			//vertices[i] = false;
 		}
 
 		clique = maxKlika.ToArray();
 		return maxKlika.Count;
 	}
 
-	public static void Clique(int k, Graph g) // k - iteracja, g - graf
+	public static void Clique(int k, Graph g)
 	{
-		if (k == n)
-			return;
-
-		for(int i = klika[klika.Count - 1] + 1; i < n; i++)
+		foreach (int v in klika)
 		{
-			//if(vertices[i] == false && g.OutDegree(i) >= klika.Count)
-			//{
-				bool ok = true;
-				foreach(var j in klika)
-				{
-					if(g.GetEdgeWeight(i, j) == null || g.GetEdgeWeight(j, i) == null)
-					{
-						ok = false;
-						break;
-					}
-				}
-				if(ok)
-				{
-					klika.Add(i);
-					//vertices[i] = true;
-					if(klika.Count > maxKlika.Count)
-					{
-						maxKlika = new List<int>(klika);
-					}
-					Clique(k + 1, g);
-					klika.Remove(i);
-					//vertices[i] = false;
-				}
-			//}
+			if (g.GetEdgeWeight(k, v) == null || g.GetEdgeWeight(v, k) == null)
+				return;
 		}
+
+		used[k] = true;
+		klika.Add(k);
+
+		if (klika.Count > maxKlika.Count)
+		{
+			maxKlika = new List<int>(klika);
+		}
+
+		foreach (Edge e in g.OutEdges(k))
+		{
+			if(!used[e.To] && e.To > k)
+				Clique(e.To, g);
+		}
+
+		klika.Remove(k);
+		used[k] = false;
 	}
 
 	/// <summary>
