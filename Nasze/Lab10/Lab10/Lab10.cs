@@ -97,10 +97,11 @@ public static class Lab10GraphExtender
         map=null;
 		if (g.VerticesCount != h.VerticesCount || g.EdgesCount != h.EdgesCount || g.Directed != h.Directed)
 			return false;
-
+		
 		int[] myMap = new int[g.VerticesCount];
 		bool[] used = new bool[g.VerticesCount];
-		bool ret = Backtracking(g, h, 0, ref myMap, ref used);
+		bool[] hUsed = new bool[g.VerticesCount];
+		bool ret = Backtracking(g, h, 0, ref myMap, ref used, ref hUsed);
 		if (ret == true)
 		{
 			map = new int[g.VerticesCount];
@@ -108,37 +109,46 @@ public static class Lab10GraphExtender
 		}
 		return ret;
     }
-	public static bool Backtracking(Graph g, Graph h, int vh, ref int[] map, ref bool[] used) // szukamy mapowania dla wierzchołka vh
+	public static bool Backtracking(Graph g, Graph h, int vh, ref int[] map, ref bool[] used, ref bool[] hUsed) // szukamy mapowania dla wierzchołka vh
 	{
 		if(vh == g.VerticesCount)
 		{
 			return true;
 		}
-
-		// Szukamy wsrod wszystkich wierzcholkow dotad niezmapowanych:
-		for(int i = 0; i < h.VerticesCount; i++)
+		
+		for(int i = 0; i < g.VerticesCount; i++)
 		{
-			if(used[i] == false && h.OutDegree(i) == g.OutDegree(vh))
+			if(used[i] == false && g.OutDegree(i) == h.OutDegree(vh))
 			{
 				bool ok = true;
-				// Gdyby vh zmapowac na i, to musza zgadzac sie mapowania krawedzi wychodzacych
-				foreach (Edge e in g.OutEdges(vh))
+				foreach (Edge e in h.OutEdges(vh))
 				{
-					if (used[e.To] == true)
-						if (h.GetEdgeWeight(i, map[e.To]).HasValue == false || h.GetEdgeWeight(i, map[e.To]).Value != g.GetEdgeWeight(vh, e.To).Value)
+					if (hUsed[e.To] == true)
+					{
+						if (g.GetEdgeWeight(i, map[e.To]).HasValue == false || h.GetEdgeWeight(vh, e.To).Value != g.GetEdgeWeight(i, map[e.To]).Value)
 						{
 							ok = false;
 							break;
 						}
-				}
+						if (g.Directed)
+							if (h.GetEdgeWeight(e.To, vh).HasValue)
+								if (!g.GetEdgeWeight(map[e.To], i).HasValue || h.GetEdgeWeight(e.To, vh).Value != g.GetEdgeWeight(map[e.To], i).Value)
+								{
+									ok = false;
+									break;
+								}
+					}
+                }
 				if(ok)
 				{
-					used[i] = true;
 					map[vh] = i;
-					if (Backtracking(g, h, vh + 1, ref map, ref used))
+					used[i] = true;
+					hUsed[vh] = true;
+					if (Backtracking(g, h, vh + 1, ref map, ref used, ref hUsed))
 						return true;
 					used[i] = false;
-		
+					hUsed[vh] = false;
+
 				}
             }
 		}

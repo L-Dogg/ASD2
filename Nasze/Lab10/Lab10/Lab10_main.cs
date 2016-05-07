@@ -40,7 +40,7 @@ class Lab10
 
         PrepareTests();
         PrepareTests2();
-		
+		/*
         Console.WriteLine();
         Console.WriteLine("Clique Tests");
         for ( int i=0 ; i<cliq_test.Length ; ++i )
@@ -69,7 +69,7 @@ class Lab10
             else
                 Console.WriteLine("{0}", n==cliq_res2[i] && CliqueTest(cliq_test2[i],n,clique) && cliq_test2[i].IsEqualParallel(g) ? "Passed" : "Fail" );
 		}
-		
+		*/
 		Console.WriteLine();
         Console.WriteLine("Isomorpism Tests");
         for ( int i=0 ; i<izo_test.GetLength(0) ; ++i )
@@ -83,7 +83,7 @@ class Lab10
             Console.WriteLine("{0}", res ?  "Passed" : "Fail" );
             }
 
-        Console.WriteLine();
+       Console.WriteLine();
         Console.WriteLine("Isomorpism Tests - efficiency");
         for ( int i=0 ; i<izo_test2.GetLength(0) ; ++i )
             {
@@ -106,7 +106,7 @@ class Lab10
                 Console.WriteLine("{0}", res ?  "Passed" : "Fail" );
                 }
             }
-
+			
         Console.WriteLine();
         }
 
