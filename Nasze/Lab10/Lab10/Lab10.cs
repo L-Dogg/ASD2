@@ -9,6 +9,12 @@ using System.Linq;
 /// </summary>
 public static class Lab10GraphExtender
     {
+
+	private static bool[] used;
+	private static int n;
+	private static List<int> klika;
+	private static List<int> maxKlika;
+
 	/// <summary>
 	/// Wyznacza największą klikę w grafie i jej rozmiar metodą pełnego przeglądu (backtracking)
 	/// </summary>
@@ -20,23 +26,20 @@ public static class Lab10GraphExtender
 	/// 2) Nie wolno modyfikować badanego grafu.
 	/// </remarks>
 
-	private static int n;
-	private static List<int> klika;
-	private static List<int> maxKlika;
-	private static bool[] used;
 	public static int MaxClique(this Graph g, out int[] clique)
 	{
 		n = g.VerticesCount;
-		// Graf pełny
+		// Graf pełny (nieskierowany lub skierowany)
 		if((g.EdgesCount == (n-1) * n / 2 && !g.Directed) || (g.EdgesCount == (n-1)*n && g.Directed))
 		{
 			clique = Enumerable.Range(0, n).ToArray();
 			return n;
 		}
 
+		used = new bool[n];
 		klika = new List<int>();
 		maxKlika = new List<int>();
-		used = new bool[n];
+
 		for(int i = 0; i < g.VerticesCount; i++)
 		{
 			klika.Add(i);
@@ -59,7 +62,9 @@ public static class Lab10GraphExtender
 		foreach (int v in klika)
 		{
 			if (g.GetEdgeWeight(k, v) == null || g.GetEdgeWeight(v, k) == null)
+			{
 				return;
+			}
 		}
 
 		used[k] = true;
@@ -95,7 +100,12 @@ public static class Lab10GraphExtender
 	public static bool IsomorpchismTest(this Graph g, Graph h, out int[] map)
     {
         map=null;
-		if (g.VerticesCount != h.VerticesCount || g.EdgesCount != h.EdgesCount || g.Directed != h.Directed)
+
+		if (g.Directed != h.Directed)
+			return false;
+		else if (g.EdgesCount != h.EdgesCount)
+			return false;
+		else if (g.VerticesCount != h.VerticesCount)
 			return false;
 		
 		int[] myMap = new int[g.VerticesCount];
@@ -118,7 +128,7 @@ public static class Lab10GraphExtender
 		
 		for(int i = 0; i < g.VerticesCount; i++)
 		{
-			if(used[i] == false && g.OutDegree(i) == h.OutDegree(vh))
+			if(used[i] == false && g.OutDegree(i) == h.OutDegree(vh) && g.InDegree(i) == h.InDegree(vh))
 			{
 				bool ok = true;
 				for(int k = 0; k < vh; k++)
@@ -148,5 +158,5 @@ public static class Lab10GraphExtender
 		return false;
 	}
 
-    }
+	}
 

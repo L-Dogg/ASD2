@@ -40,7 +40,7 @@ class Lab10
 
         PrepareTests();
         PrepareTests2();
-		/*
+		
         Console.WriteLine();
         Console.WriteLine("Clique Tests");
         for ( int i=0 ; i<cliq_test.Length ; ++i )
@@ -61,7 +61,7 @@ class Lab10
             Console.Write($"Test {i+1}:  ");
             g=cliq_test2[i].Clone();
             thr.Start();
-            if ( !thr.Join((int)(speedFactor*4000)))  // powinno wystarczyc 2000 
+            if ( !thr.Join((int)(speedFactor*600)))  // powinno wystarczyc 2000 
                 {
                 thr.Abort();
                 Console.WriteLine("Timeout");
@@ -69,7 +69,7 @@ class Lab10
             else
                 Console.WriteLine("{0}", n==cliq_res2[i] && CliqueTest(cliq_test2[i],n,clique) && cliq_test2[i].IsEqualParallel(g) ? "Passed" : "Fail" );
 		}
-		*/
+		
 		Console.WriteLine();
         Console.WriteLine("Isomorpism Tests");
         for ( int i=0 ; i<izo_test.GetLength(0) ; ++i )
@@ -93,17 +93,18 @@ class Lab10
             Console.Write($"Test {i+1}:  ");
             g = izo_test2[i,0].Clone();
             h = izo_test2[i,1].Clone();
-			//DateTime dt = DateTime.Now;
+			DateTime dt = DateTime.Now;
 			thr.Start();
-            if ( !thr.Join((int)(speedFactor*4000)) )  // powinno wystarczyc 2000 
+            if ( !thr.Join((int)(speedFactor*2500)) )  // powinno wystarczyc 2000 
                 {
                 thr.Abort();
                 Console.WriteLine("Timeout");
-                }
+				Console.WriteLine($"Time {(DateTime.Now - dt).TotalMilliseconds} ms");
+			}
             else
                 {
 
-				//Console.WriteLine($"Time {(DateTime.Now - dt).Milliseconds} ms");
+				Console.WriteLine($"Time {(DateTime.Now - dt).TotalMilliseconds} ms");
 				res = ( izo ? izo_res2[i] && map!=null && izo_test2[i,0].IsIsomorphicParallel(izo_test2[i,1],map)==izo_res2[i] : !izo_res2[i] && map==null )
                         && izo_test2[i,0].IsEqualParallel(g) && izo_test2[i,1].IsEqualParallel(h) ;
                 Console.WriteLine("{0}", res ?  "Passed" : "Fail" );
