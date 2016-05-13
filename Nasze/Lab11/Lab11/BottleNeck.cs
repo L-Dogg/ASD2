@@ -50,6 +50,7 @@ public static class BottleNeckExtender
 		Graph helperCosts = g.IsolatedVerticesGraph(true, 2 * n + 2);
 		int s = helper.VerticesCount - 1;
 		int t = helper.VerticesCount - 2;
+		int need = 0;
 
 		for (int i = 0; i < n; i++)
 		{
@@ -62,6 +63,7 @@ public static class BottleNeckExtender
 			{
 				helper.AddEdge(i, t, -p[i]);
 				helperCosts.AddEdge(i, t, 0);
+				need -= p[i];
 			}
 		}
 
@@ -125,13 +127,13 @@ public static class BottleNeckExtender
 				}
 				else
 				{
-					//retVal = 2;
 					flow.AddEdge(e);
 				}
 			}
 		}
-
 		ext = myExt.ToArray();
-		return retVal;
+		if (flowValue >= need)
+			return 1;
+		return 2;
     }
 }
