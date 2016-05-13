@@ -1,4 +1,5 @@
 using ASD.Graphs;
+using System.Collections.Generic;
 
 public static class BottleNeckExtender
 {
@@ -83,14 +84,54 @@ public static class BottleNeckExtender
 		Graph helperFlow;
 		int myCost;
 		int myFlowValue = helper.MinCostFlow(helperCosts, s, t, out myCost, out helperFlow);
-		
 
 
-        flowValue =-1;  // ZMIENIĆ 
-        cost = -1;      // ZMIENIĆ
-        flow = null;    // ZMIENIĆ
-        ext = null;     // ZMIENIĆ
-        return -1;      // ZMIENIĆ
+		flowValue = myFlowValue;
+		cost = myCost;
+		flow = g.IsolatedVerticesGraph(true, n);
+
+		if (myCost == 0)
+		{
+			ext = new Edge[0];
+			for(int i = 0; i < n; i++)
+			{
+				foreach(Edge e in helperFlow.OutEdges(i))
+				{
+					if (e.To == i + n || e.To == t)
+						continue;
+					flow.AddEdge(e);
+				}
+			}
+
+			return 0;
+		}
+
+		int retVal = 1;
+		List<Edge> myExt = new List<Edge>();
+		GraphExport ge = new GraphExport();
+	
+		for (int i = 0; i < n; i++)
+		{
+			foreach (Edge e in helperFlow.OutEdges(i))
+			{
+				if (e.To == i + n || e.To == t)
+					continue;
+
+				int pathFlow = helperFlow.GetEdgeWeight(i + n, e.To).Value;
+				if (pathFlow > 0)
+				{
+					myExt.Add(new Edge(e.From, e.To, pathFlow));
+					flow.AddEdge(e.From, e.To, e.Weight + pathFlow);
+				}
+				else
+				{
+					//retVal = 2;
+					flow.AddEdge(e);
+				}
+			}
+		}
+
+		ext = myExt.ToArray();
+		return retVal;
     }
-
 }
