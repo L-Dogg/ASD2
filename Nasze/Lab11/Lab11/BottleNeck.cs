@@ -1,8 +1,7 @@
-
 using ASD.Graphs;
 
 public static class BottleNeckExtender
-    {
+{
 
     /// <summary>
     /// Wyszukiwanie "wąskich gardeł" w sieci przesyłowej
@@ -44,12 +43,54 @@ public static class BottleNeckExtender
     //     (każdy element tablicy to opis jednej takiej krawędzi)
     /// </remarks>
     public static int BottleNeck(this Graph g, Graph c, int[] p, out int flowValue, out int cost, out Graph flow, out Edge[] ext)
-        {
+    {
+		int n = g.VerticesCount;
+		Graph helper = g.IsolatedVerticesGraph(true, 2 * n + 2);
+		Graph helperCosts = g.IsolatedVerticesGraph(true, 2 * n + 2);
+		int s = helper.VerticesCount - 1;
+		int t = helper.VerticesCount - 2;
+
+		for (int i = 0; i < n; i++)
+		{
+			if (p[i] > 0)
+			{
+				helper.AddEdge(s, i, p[i]);
+				helperCosts.AddEdge(s, i, 0);
+			}
+			else if (p[i] < 0)
+			{
+				helper.AddEdge(i, t, -p[i]);
+				helperCosts.AddEdge(i, t, 0);
+			}
+		}
+
+		for(int i = 0; i < n; i++)
+		{
+			if (g.OutDegree(i) == 0)
+				continue;
+			helper.AddEdge(i, i + n, int.MaxValue);
+			helperCosts.AddEdge(i, i + n, 0);
+			foreach (Edge e in g.OutEdges(i))
+			{
+				helper.AddEdge(e);
+				helperCosts.AddEdge(e.From, e.To, 0);
+
+				helper.AddEdge(i + n, e.To, int.MaxValue);
+				helperCosts.AddEdge(i + n, e.To, c.GetEdgeWeight(e.From, e.To).Value);
+			}
+		}
+
+		Graph helperFlow;
+		int myCost;
+		int myFlowValue = helper.MinCostFlow(helperCosts, s, t, out myCost, out helperFlow);
+		
+
+
         flowValue =-1;  // ZMIENIĆ 
         cost = -1;      // ZMIENIĆ
         flow = null;    // ZMIENIĆ
         ext = null;     // ZMIENIĆ
         return -1;      // ZMIENIĆ
-        }
-
     }
+
+}
