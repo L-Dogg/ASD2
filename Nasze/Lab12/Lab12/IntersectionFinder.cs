@@ -192,9 +192,7 @@ namespace discs
 			}
 			for(int i = 0; i < n; i++)
 			{
-				double dX = disks[i].Center.X - p.X;
-				double dY = disks[i].Center.Y - p.Y;
-				if (Math.Sqrt(dX * dX + dY * dY) <= disks[i].Radius + Program.epsilon)
+				if (disks[i].Contains(p))
 					continue;
 				else
 					return null;
