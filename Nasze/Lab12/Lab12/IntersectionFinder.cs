@@ -157,37 +157,50 @@ namespace discs
 				return null;
 
 			int n = disks.Length;
-			// Wstepne sprawdzenie rozłącznych i usunięcie niepotrzebnych
-			Point[,] maxRight = new Point[n, n];
+			Point maxRight = new Point();
+			Point p = new Point(int.MaxValue, int.MaxValue);
 			for (int i = 0; i < n; i++)
 			{
 				Point[] crossingPoints;
-				for(int j = 0; j < n; j++)
+				for(int j = i; j < n; j++)
 				{
-					if (i == j)
-						continue;
 					var type = disks[i].GetIntersectionType(disks[j], out crossingPoints);
 					if (type == IntersectionType.Disjoint)
 						return null;
 					else if (type == IntersectionType.Contains || type == IntersectionType.Identical)
-						maxRight[i, j] = new Point(disks[j].Center.X + disks[j].Radius, disks[j].Center.Y);
+						maxRight = new Point(disks[j].Center.X + disks[j].Radius, disks[j].Center.Y);
 					else if (type == IntersectionType.IsContained)
-						maxRight[i,j] = new Point(disks[i].Center.X + disks[i].Radius, disks[i].Center.Y);
+						maxRight = new Point(disks[i].Center.X + disks[i].Radius, disks[i].Center.Y);
 					else if (type == IntersectionType.Touches)
-						maxRight[i, j] = crossingPoints[0];
+						maxRight = crossingPoints[0];
 					else
 					{
-						//a crosses to rightmost = skrajnie prawy z lewego, jezeli jego Y jest pomiedzy Y-ami dwóch punktów przecięci
-						//aalbo bardziej prawy z obu punktów przecięcia
 						Disk leftDisk = (disks[i].Center.X <= disks[j].Center.X) ? disks[i] : disks[j];
-						Point rightPoint = new Point(leftDisk.Center.X + leftDisk.Radius, leftDisk.Center.Y);
-
+						double rightPointY = leftDisk.Center.Y;
+						Point upper = (crossingPoints[0].Y > crossingPoints[1].Y) ? crossingPoints[0] : crossingPoints[1];
+						Point lower = (crossingPoints[0].Y < crossingPoints[1].Y) ? crossingPoints[0] : crossingPoints[1];
+						if (rightPointY <= upper.Y && rightPointY >= lower.Y)
+							maxRight = new Point(leftDisk.Center.X + leftDisk.Radius, rightPointY);
+						else
+						{
+							maxRight = (crossingPoints[0].X > crossingPoints[1].X) ? crossingPoints[0] : crossingPoints[1];
+						}
 					}
-
+					if (maxRight.X < p.X)
+						p = maxRight;
 				}
 			}
+			for(int i = 0; i < n; i++)
+			{
+				double dX = disks[i].Center.X - p.X;
+				double dY = disks[i].Center.Y - p.Y;
+				if (Math.Sqrt(dX * dX + dY * dY) <= disks[i].Radius + Program.epsilon)
+					continue;
+				else
+					return null;
+			}
 			
-            return null;
+            return p;
         }
 
     }
