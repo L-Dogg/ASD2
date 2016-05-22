@@ -153,53 +153,40 @@ namespace discs
 
         public static Point? FindCommonPoint(Disk[] disks)
         {
-			/*
-			 * uzupełnij
-			 */
 			if (disks == null)
 				return null;
 
 			int n = disks.Length;
-			
 			// Wstepne sprawdzenie rozłącznych i usunięcie niepotrzebnych
-			List<Disk> d = new List<Disk>(disks);
-			Point[,][] pts = new Point[d.Count, d.Count][];
+			Point[,] maxRight = new Point[n, n];
 			for (int i = 0; i < n; i++)
 			{
 				Point[] crossingPoints;
 				for(int j = 0; j < n; j++)
 				{
+					if (i == j)
+						continue;
 					var type = disks[i].GetIntersectionType(disks[j], out crossingPoints);
-                    if (type == IntersectionType.Disjoint)
+					if (type == IntersectionType.Disjoint)
 						return null;
-					if (type == IntersectionType.Contains || type == IntersectionType.Identical)
+					else if (type == IntersectionType.Contains || type == IntersectionType.Identical)
+						maxRight[i, j] = new Point(disks[j].Center.X + disks[j].Radius, disks[j].Center.Y);
+					else if (type == IntersectionType.IsContained)
+						maxRight[i,j] = new Point(disks[i].Center.X + disks[i].Radius, disks[i].Center.Y);
+					else if (type == IntersectionType.Touches)
+						maxRight[i, j] = crossingPoints[0];
+					else
 					{
-						d.Remove(disks[i]);
+						//a crosses to rightmost = skrajnie prawy z lewego, jezeli jego Y jest pomiedzy Y-ami dwóch punktów przecięci
+						//aalbo bardziej prawy z obu punktów przecięcia
+						Disk leftDisk = (disks[i].Center.X <= disks[j].Center.X) ? disks[i] : disks[j];
+						Point rightPoint = new Point(leftDisk.Center.X + leftDisk.Radius, leftDisk.Center.Y);
+
 					}
-					if (type == IntersectionType.Crosses || type == IntersectionType.Touches)
-						pts[i, j] = crossingPoints;
 
 				}
 			}
-
-			bool ok = false;
 			
-			for(int i = 0; i < d.Count; i++)
-			{
-				for (int j = i; j < d.Count; j++)
-				{					
-					for (int k = 0; k < d.Count; k++)
-					{
-						/*Point[] crossingPoints;
-						var type = disks[j].GetIntersectionType(disks[k], out crossingPoints);
-						if (type == IntersectionType.Touches)
-							if(pts[i,j][0] 
-						else if(type == IntersectionType.Crosses)
-						*/
-							
-                    }
-				}
-			}
             return null;
         }
 
