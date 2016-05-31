@@ -95,7 +95,7 @@ class Lab10
             h = izo_test2[i,1].Clone();
 			DateTime dt = DateTime.Now;
 			thr.Start();
-            if ( !thr.Join((int)(speedFactor*2500)) )  // powinno wystarczyc 2000 
+            if ( !thr.Join((int)(speedFactor*4000)) )  // powinno wystarczyc 2000 
                 {
                 thr.Abort();
                 Console.WriteLine("Timeout");

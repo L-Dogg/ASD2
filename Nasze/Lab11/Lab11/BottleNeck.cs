@@ -87,7 +87,6 @@ public static class BottleNeckExtender
 		int myCost;
 		int myFlowValue = helper.MinCostFlow(helperCosts, s, t, out myCost, out helperFlow);
 
-
 		flowValue = myFlowValue;
 		cost = myCost;
 		flow = g.IsolatedVerticesGraph(true, n);
@@ -107,10 +106,8 @@ public static class BottleNeckExtender
 
 			return 0;
 		}
-
-		int retVal = 1;
+		
 		List<Edge> myExt = new List<Edge>();
-		GraphExport ge = new GraphExport();
 	
 		for (int i = 0; i < n; i++)
 		{

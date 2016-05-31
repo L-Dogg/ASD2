@@ -114,11 +114,70 @@ namespace ASD
         /// 
         public static int triangulateMonotone(Point[] polygon, out Triangle[] triangulation)
         {
+			int leftMostInd = 0, rightMostInd = polygon.Length - 1;
+			
+			for(int i = 0; i < polygon.Length; i++)
+			{
+				int minInd = i;
+				for (int j = i + 1; j < polygon.Length; j++)
+					if (polygon[j].x < polygon[minInd].x)
+						minInd = j;
 
+				var p = polygon[i];
+				polygon[i] = polygon[minInd];
+				polygon[minInd] = p;
+			}
 
+			List<Point> upper = new List<Point>();
+			List<Point> lower = new List<Point>();
+			upper.Add(polygon[leftMostInd]);
+			lower.Add(polygon[rightMostInd]);
+			int k = (leftMostInd + 1) % polygon.Length;
+			while (k != rightMostInd)
+			{
+				upper.Add(polygon[k]);
+				k = (k + 1) % polygon.Length;
+			}
+			k = (rightMostInd + 1) % polygon.Length;
+			while (k != leftMostInd)
+			{
+				lower.Add(polygon[k]);
+				k = (k + 1) % polygon.Length;
+			}
+			var tmp = new List<Triangle>();
+			var pts = new List<Point>();
 
-                triangulation = null;
-                return 0;            
+			pts.Add(polygon[0]);
+			pts.Add(polygon[1]);
+			int v = 2;
+
+			while(v < polygon.Length)
+			{
+				Point p = polygon[v++];
+
+				if(upper.Contains(p) && lower.Contains(pts[0]) || lower.Contains(p) && upper.Contains(pts[0]))
+				{
+					while(pts.Count > 1)
+					{
+						tmp.Add(new Triangle(pts[0], pts[1], p));
+						pts.RemoveAt(0);
+					}
+					pts.Add(p);
+				}
+				else
+				{
+					// while do poprawy
+					while(new Segment(pts.Last(), pts[pts.Count - 2]).Direction(p) > 0 && pts.Count > 1)
+					{
+						tmp.Add(new Triangle(pts.Last(), pts[pts.Count - 2], p));
+						pts.RemoveAt(pts.Count - 1);
+					}
+					pts.Add(p);
+				}
+			}
+
+			triangulation = tmp.ToArray();
+            return 0;            
         }
 
 

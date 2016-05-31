@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B1024C15-AA5F-4A7D-82F8-CB2B36AFE40D}</ProjectGuid>
+    <ProjectGuid>{8A390D64-A5B9-42C2-AF90-E3DD2FC674AB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lab11</RootNamespace>
-    <AssemblyName>Lab11</AssemblyName>
+    <RootNamespace>Lab12_geom</RootNamespace>
+    <AssemblyName>Lab12-geom</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Graph">
-      <HintPath>..\..\..\..\..\..\..\..\Desktop\Semestr 4\ASD2\Graph.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,8 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BottleNeck.cs" />
-    <Compile Include="Lab11_main.cs" />
+    <Compile Include="geom.cs" />
+    <Compile Include="graham_jarvis_quickhull.cs" />
+    <Compile Include="Lab12_main.cs" />
+    <Compile Include="Lab12_main_dod_testy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
