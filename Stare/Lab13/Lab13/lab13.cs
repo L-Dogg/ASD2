@@ -167,7 +167,7 @@ namespace ASD
 				else
 				{
 					// while do poprawy
-					while(new Segment(pts.Last(), pts[pts.Count - 2]).Direction(p) > 0 && pts.Count > 1)
+					while(pts.Count > 1 && new Segment(pts.Last(), pts[pts.Count - 2]).Direction(p) > 0)
 					{
 						tmp.Add(new Triangle(pts.Last(), pts[pts.Count - 2], p));
 						pts.RemoveAt(pts.Count - 1);
@@ -177,6 +177,7 @@ namespace ASD
 			}
 
 			triangulation = tmp.ToArray();
+			
             return 0;            
         }
 
@@ -196,9 +197,18 @@ namespace ASD
         /// 
         public static double polygonArea(Triangle[] triangulation)
         {
+			double p, a, b, c;
+			double area = 0;
+			foreach (Triangle t in triangulation)
+			{
+				a = Point.Distance(t.a, t.b);
+				b = Point.Distance(t.a, t.c);
+				c = Point.Distance(t.b, t.c);
+				p = 0.5 * (a + b + c);
+				area += Math.Sqrt(p * (p - a) * (p - b) * (p - c));			 
+			}
 
-
-            return 0;
+			return area;
         }
     }
 }
