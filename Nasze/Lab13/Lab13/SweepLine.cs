@@ -117,12 +117,10 @@ namespace ASD
 			double D = 0;
 			foreach(var e in events)
 			{
-				Console.WriteLine("ITER");
+				area += (e.Coord - xCoord) * D;
+				
 				if (e.IsStartingPoint)
 				{
-					if(lines.Count == 0)
-						xCoord = e.Coord;
-					Console.WriteLine("Adding starting line: {0}", e.Coord);
 					var seg = new Geometry.Segment
 						(
 						new Geometry.Point(e.Coord, rectangles[e.Idx].MinY),											
@@ -132,18 +130,12 @@ namespace ASD
                 }
 				else
 				{
-					Console.WriteLine("Calculated xCoord: {0}", xCoord);
-					area += Math.Abs(xCoord - e.Coord) * D;
-					Console.WriteLine("Area += |{0} - {1}| * {2} = {3}", xCoord, e.Coord, D, Math.Abs(xCoord - e.Coord) * D);
-					
 					lines.Remove(new Geometry.Segment(
 						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MinY),
 						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MaxY)));
-					Console.WriteLine("Removing line: {0}", rectangles[e.Idx].MinX);
-					xCoord = e.Coord;
 				}
+				xCoord = e.Coord;
 				D = VerticalSegmentsUnionLength(lines.ToArray());
-				Console.WriteLine("Calculated D: {0}", D);
 			}
 			
 			return area;
