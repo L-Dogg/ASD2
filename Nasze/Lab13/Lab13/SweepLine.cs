@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ASD
@@ -102,6 +103,7 @@ namespace ASD
 		public double RectanglesUnionArea(Geometry.Rectangle[] rectangles)
 		{
 			List<SweepEvent> events = new List<SweepEvent>();
+			List<Geometry.Segment> lines = new List<Geometry.Segment>();
 
 			for(int i = 0; i < rectangles.Length; i++)
 			{
@@ -110,15 +112,19 @@ namespace ASD
 			}
 			events.Sort();
 
-			List<Geometry.Segment> lines = new List<Geometry.Segment>();
-
+			double xCoord = 0;
 			double area = 0;
 			double D = 0;
 			foreach(var e in events)
 			{
+				Console.WriteLine("ITER");
 				if (e.IsStartingPoint)
 				{
-					var seg = new Geometry.Segment(
+					if(lines.Count == 0)
+						xCoord = e.Coord;
+					Console.WriteLine("Adding starting line: {0}", e.Coord);
+					var seg = new Geometry.Segment
+						(
 						new Geometry.Point(e.Coord, rectangles[e.Idx].MinY),											
 						new Geometry.Point(e.Coord, rectangles[e.Idx].MaxY)
 						);
@@ -126,16 +132,20 @@ namespace ASD
                 }
 				else
 				{
-					double xCoord = rectangles[e.Idx].MinX;
+					Console.WriteLine("Calculated xCoord: {0}", xCoord);
 					area += Math.Abs(xCoord - e.Coord) * D;
-					D = VerticalSegmentsUnionLength(lines.ToArray());
-
+					Console.WriteLine("Area += |{0} - {1}| * {2} = {3}", xCoord, e.Coord, D, Math.Abs(xCoord - e.Coord) * D);
+					
 					lines.Remove(new Geometry.Segment(
-						new Geometry.Point(xCoord, rectangles[e.Idx].MinY),
-						new Geometry.Point(xCoord, rectangles[e.Idx].MaxY)));
+						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MinY),
+						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MaxY)));
+					Console.WriteLine("Removing line: {0}", rectangles[e.Idx].MinX);
+					xCoord = e.Coord;
 				}
+				D = VerticalSegmentsUnionLength(lines.ToArray());
+				Console.WriteLine("Calculated D: {0}", D);
 			}
-
+			
 			return area;
 		}
 
