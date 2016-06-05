@@ -1,7 +1,5 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ASD
@@ -52,16 +50,15 @@ namespace ASD
 		/// Funkcja obliczająca długość teoriomnogościowej sumy pionowych odcinków
 		/// </summary>
 		/// <returns>Długość teoriomnogościowej sumy pionowych odcinków</returns>
-		/// <param name="segments">Tablica z odcinkami, których teoriomnogościowej sumy długość należy policzyć</param>
-		/// Każdy odcinek opisany jest przez dwa punkty: początkowy i końcowy
-		/// </param>
+		/// <param name="segments">Tablica z odcinkami, których teoriomnogościowej sumy długość należy policzyć.
+		/// Każdy odcinek opisany jest przez dwa punkty: początkowy i końcowy </param>
 		public double VerticalSegmentsUnionLength(Geometry.Segment[] segments)
         {
 			int open = 0;
 			int closed = 0;
 			double length = 0;
 			
-			List<SweepEvent> events = new List<SweepEvent>();
+			var events = new List<SweepEvent>();
 			for (int i = 0; i < segments.Length; i++)
 			{
 				events.Add(new SweepEvent(segments[i].ps.y, true, i));
@@ -96,14 +93,14 @@ namespace ASD
 		/// Funkcja obliczająca pole teoriomnogościowej sumy prostokątów
 		/// </summary>
 		/// <returns>Pole teoriomnogościowej sumy prostokątów</returns>
-		/// <param name="rectangles">Tablica z prostokątami, których teoriomnogościowej sumy pole należy policzyć</param>
+		/// <param name="rectangles">Tablica z prostokątami, których teoriomnogościowej sumy pole należy policzyć. 
 		/// Każdy prostokąt opisany jest przez cztery wartości: minimalna współrzędna X, minimalna współrzędna Y, 
 		/// maksymalna współrzędna X, maksymalna współrzędna Y.
 		/// </param>
 		public double RectanglesUnionArea(Geometry.Rectangle[] rectangles)
 		{
-			List<SweepEvent> events = new List<SweepEvent>();
-			Dictionary<int, Geometry.Segment> lines = new Dictionary<int, Geometry.Segment>();
+			var events = new List<SweepEvent>();
+			var lines = new Dictionary<int, Geometry.Segment>();
 			double xCoord = 0;
 			double area = 0;
 			double D = 0;
