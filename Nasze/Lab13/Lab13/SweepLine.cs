@@ -103,7 +103,10 @@ namespace ASD
 		public double RectanglesUnionArea(Geometry.Rectangle[] rectangles)
 		{
 			List<SweepEvent> events = new List<SweepEvent>();
-			List<Geometry.Segment> lines = new List<Geometry.Segment>();
+			Dictionary<int, Geometry.Segment> lines = new Dictionary<int, Geometry.Segment>();
+			double xCoord = 0;
+			double area = 0;
+			double D = 0;
 
 			for(int i = 0; i < rectangles.Length; i++)
 			{
@@ -112,13 +115,9 @@ namespace ASD
 			}
 			events.Sort();
 
-			double xCoord = 0;
-			double area = 0;
-			double D = 0;
 			foreach(var e in events)
 			{
-				area += (e.Coord - xCoord) * D;
-				
+				area += (e.Coord - xCoord) * D;				
 				if (e.IsStartingPoint)
 				{
 					var seg = new Geometry.Segment
@@ -126,16 +125,14 @@ namespace ASD
 						new Geometry.Point(e.Coord, rectangles[e.Idx].MinY),											
 						new Geometry.Point(e.Coord, rectangles[e.Idx].MaxY)
 						);
-					lines.Add(seg);
+					lines.Add(e.Idx, seg);
                 }
 				else
 				{
-					lines.Remove(new Geometry.Segment(
-						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MinY),
-						new Geometry.Point(rectangles[e.Idx].MinX, rectangles[e.Idx].MaxY)));
+					lines.Remove(e.Idx);
 				}
 				xCoord = e.Coord;
-				D = VerticalSegmentsUnionLength(lines.ToArray());
+				D = VerticalSegmentsUnionLength(lines.Values.ToArray());
 			}
 			
 			return area;
