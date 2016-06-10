@@ -77,9 +77,9 @@ public class BitList
         BitList b = obj as BitList;
         if ( b==null )
             return false;
-        if ( bits.Count!=b.bits.Count )
+        if ( Count!=b.Count )
             return false;
-        for ( int i=0 ; i<bits.Count ; ++i )
+        for ( int i = 0 ; i<bits.Count ; ++i )
             if ( bits[i]!=b.bits[i] )
                 return false;
         return true;
@@ -87,9 +87,9 @@ public class BitList
 
     public override int GetHashCode()
         {
-        int res=0;
-        for ( int i=0 ; i<bits.Count ; ++i )
-            res ^= ((int)bits[i])<<((i&3)<<3);
+        int res = 0;
+        for ( int i = 0 ; i<bits.Count ; ++i )
+            res^=((int)bits[i])<<((i&3)<<3);
         return res;
         }
 
